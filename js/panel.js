@@ -1,12 +1,12 @@
 // The live optimizer panel (used by the walkthrough page and the standalone UI page).
-import * as core from './vd-core.js?v=d5cce861';
-import { HeightfieldViewer, CAM_COLORS } from './viewer3d.js?v=d5cce861';
-import { LossChart } from './widgets.js?v=d5cce861';
-import { PRESETS, makeTarget, fromFile, paint, solid, noiseImage, stripesBW, orient, display } from './targets.js?v=d5cce861';
+import * as core from './vd-core.js?v=6a93b9b1';
+import { HeightfieldViewer, CAM_COLORS } from './viewer3d.js?v=6a93b9b1';
+import { LossChart } from './widgets.js?v=6a93b9b1';
+import { PRESETS, makeTarget, fromFile, paint, solid, noiseImage, stripesBW, orient, display } from './targets.js?v=6a93b9b1';
 
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
-const workerUrl = new URL('./worker.js?v=d5cce861', import.meta.url);
+const workerUrl = new URL('./worker.js?v=6a93b9b1', import.meta.url);
 
 // ---------------------------------------------------------------------------------------------
 // Live optimizer panel (hero demo + playground)

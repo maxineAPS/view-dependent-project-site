@@ -1,8 +1,8 @@
-import * as core from './vd-core.js?v=d5cce861';
-import { SliceFigure, SlicingFigure, HeavisidePlot, renderSlice } from './widgets.js?v=d5cce861';
-import { paint, solid, noiseImage, stripesBW } from './targets.js?v=d5cce861';
-import { JsCell, round } from './jscell.js?v=d5cce861';
-import { OptimizerPanel, SCENARIOS, workerUrl } from './panel.js?v=d5cce861';
+import * as core from './vd-core.js?v=6a93b9b1';
+import { SliceFigure, SlicingFigure, HeavisidePlot, renderSlice } from './widgets.js?v=6a93b9b1';
+import { paint, solid, noiseImage, stripesBW } from './targets.js?v=6a93b9b1';
+import { JsCell, round } from './jscell.js?v=6a93b9b1';
+import { OptimizerPanel, SCENARIOS, workerUrl } from './panel.js?v=6a93b9b1';
 
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
@@ -11,7 +11,7 @@ const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 // Code walkthrough: functions extracted verbatim from the repository files
 // ---------------------------------------------------------------------------------------------
 const srcCache = {};
-async function source(file) { return (srcCache[file] ??= fetch(`py/${file}?v=d5cce861`).then((r) => r.text())); }
+async function source(file) { return (srcCache[file] ??= fetch(`py/${file}?v=6a93b9b1`).then((r) => r.text())); }
 function extract(src, name) {
   const lines = src.split('\n');
   const i = lines.findIndex((l) => new RegExp(`^(\\s*)def ${name}\\(`).test(l));

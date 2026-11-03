@@ -282,9 +282,5 @@ html body :is(code, pre, textarea, .code-file, .out), html body .jscell .out { f
   .opt-grid input[type=number] { width: 104px; }
 }
 /* notice at the top of both pages */
+.newbar b { font-weight: 600; user-select: all; }
 .newbar { background: #fff8e6; border-bottom: 1px solid #f1dfae; color: #5c4a14; font-size: 0.84rem; line-height: 1.4; text-align: center; padding: 6px 16px; }
-.newbar a { color: inherit; font-weight: 500; text-decoration: underline; }
-.newbar-panel { margin-top: 6px; display: flex; flex-wrap: wrap; gap: 6px 8px; align-items: center; justify-content: center; }
-.newbar-panel[hidden] { display: none; }
-.newbar-panel .chip-btn { font-size: 0.8rem; min-height: 28px; padding: 3px 10px; text-decoration: none; color: var(--ink); }
-.newbar-msg { flex-basis: 100%; }

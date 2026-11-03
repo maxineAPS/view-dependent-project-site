@@ -1,7 +1,7 @@
 // Interactive figures: the 2D slice renderer (Sec. 3.3), heightfield slicing (Sec. 3.2), Heaviside
 // approximations (Sec. 4.1) and a live loss chart. All values are computed with the same formulas as
 // rendering.py (via vd-core.js where possible).
-import * as core from './vd-core.js?v=d5cce861';
+import * as core from './vd-core.js?v=6a93b9b1';
 
 const f32 = Math.fround;
 const css = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
