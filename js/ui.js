@@ -1,5 +1,5 @@
 // Standalone design tool (app.html): the same optimizer panel as the walkthrough page.
-import { OptimizerPanel, SCENARIOS } from './panel.js?v=e24ea5f4';
+import { OptimizerPanel, SCENARIOS } from './panel.js?v=a7115a82';
 
 const start = new URLSearchParams(location.search).get('scenario');
 const pg = new OptimizerPanel(document.getElementById('playground'), { views: SCENARIOS.sunmoon.views, editable: true });

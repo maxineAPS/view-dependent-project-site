@@ -1,8 +1,8 @@
-import * as core from './vd-core.js?v=e24ea5f4';
-import { SliceFigure, SlicingFigure, HeavisidePlot, renderSlice } from './widgets.js?v=e24ea5f4';
-import { paint, solid, noiseImage, stripesBW } from './targets.js?v=e24ea5f4';
-import { JsCell, round } from './jscell.js?v=e24ea5f4';
-import { OptimizerPanel, SCENARIOS, workerUrl } from './panel.js?v=e24ea5f4';
+import * as core from './vd-core.js?v=a7115a82';
+import { SliceFigure, SlicingFigure, HeavisidePlot, renderSlice } from './widgets.js?v=a7115a82';
+import { paint, solid, noiseImage, stripesBW } from './targets.js?v=a7115a82';
+import { JsCell, round } from './jscell.js?v=a7115a82';
+import { OptimizerPanel, SCENARIOS, workerUrl } from './panel.js?v=a7115a82';
 
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
@@ -11,7 +11,7 @@ const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 // Code walkthrough: functions extracted verbatim from the repository files
 // ---------------------------------------------------------------------------------------------
 const srcCache = {};
-async function source(file) { return (srcCache[file] ??= fetch(`py/${file}?v=e24ea5f4`).then((r) => r.text())); }
+async function source(file) { return (srcCache[file] ??= fetch(`py/${file}?v=a7115a82`).then((r) => r.text())); }
 function extract(src, name) {
   const lines = src.split('\n');
   const i = lines.findIndex((l) => new RegExp(`^(\\s*)def ${name}\\(`).test(l));
@@ -31,7 +31,7 @@ function extract(src, name) {
   // drop a trailing docstring that belongs to the next function
   let body = lines.slice(start, end);
   const lastQuote = body.map((l) => l.trim()).lastIndexOf("'''");
-  if (lastQuote > i - start) body = body.slice(0, body.slice(0, lastQuote).findLastIndex((l) => l.trim()) + 1);
+  if (lastQuote > i - start) { let k = lastQuote - 1; while (k >= 0 && !body[k].trim()) k--; body = body.slice(0, k + 1); }
   return body.join('\n');
 }
 function extractRange(src, from, to) {

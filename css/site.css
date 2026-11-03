@@ -275,3 +275,9 @@ main { container-type: inline-size; }
 }
 /* show code exactly as typed: no programming ligatures (<= must not render as ≤) */
 html body :is(code, pre, textarea, .code-file, .out), html body .jscell .out { font-variant-ligatures: none; font-feature-settings: "liga" 0, "calt" 0; }
+/* iOS Safari zooms the page when a form field with text under 16px gets focus: use 16px on touch screens
+   (code cells keep their size, so the JavaScript lines up with the Python next to it) */
+@media (hover: none) and (pointer: coarse) {
+  html body :is(input, select) { font-size: 16px !important; }
+  .opt-grid input[type=number] { width: 104px; }
+}

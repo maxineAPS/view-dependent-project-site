@@ -1,12 +1,12 @@
 // The live optimizer panel (used by the walkthrough page and the standalone UI page).
-import * as core from './vd-core.js?v=e24ea5f4';
-import { HeightfieldViewer, CAM_COLORS } from './viewer3d.js?v=e24ea5f4';
-import { LossChart } from './widgets.js?v=e24ea5f4';
-import { PRESETS, makeTarget, fromFile, paint, solid, noiseImage, stripesBW, orient, display } from './targets.js?v=e24ea5f4';
+import * as core from './vd-core.js?v=a7115a82';
+import { HeightfieldViewer, CAM_COLORS } from './viewer3d.js?v=a7115a82';
+import { LossChart } from './widgets.js?v=a7115a82';
+import { PRESETS, makeTarget, fromFile, paint, solid, noiseImage, stripesBW, orient, display } from './targets.js?v=a7115a82';
 
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
-const workerUrl = new URL('./worker.js?v=e24ea5f4', import.meta.url);
+const workerUrl = new URL('./worker.js?v=a7115a82', import.meta.url);
 
 // ---------------------------------------------------------------------------------------------
 // Live optimizer panel (hero demo + playground)
@@ -33,7 +33,8 @@ export class OptimizerPanel {
     this.renderViews();
     this.preview();
     if (autostart) {
-      const io = new IntersectionObserver((ents) => { if (ents.some((e) => e.isIntersecting)) { io.disconnect(); this.run(); } }, { threshold: 0.15 });
+      // start as soon as any of the panel is on screen (on a phone the panel is several screens tall)
+      const io = new IntersectionObserver((ents) => { if (ents.some((e) => e.isIntersecting)) { io.disconnect(); this.run(); } }, { threshold: 0 });
       io.observe(root);
     }
   }
@@ -101,7 +102,7 @@ export class OptimizerPanel {
       file.addEventListener('change', async () => {
         if (!file.files[0]) return;
         try { this.views[q].image = await fromFile(file.files[0]); this.views[q].target = '__file'; this.renderViews(); this.reset(); }
-        catch (e) { this.setStatus(`Could not read that image: ${e.message}`); }
+        catch { this.setStatus(`Could not open “${file.files[0].name}” as an image. Use a PNG, JPEG, WebP, GIF, BMP or SVG file.`); }
       });
       for (const key of ['az', 'el']) {
         const inp = $(`[data-r=${key}]`, card);

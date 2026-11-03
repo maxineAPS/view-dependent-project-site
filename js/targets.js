@@ -104,14 +104,25 @@ export { hex };
 // User image -> RGB float image (large images are first scaled to 1024 px, then the optimizer's
 // nearest-neighbour resizes of image.py apply).
 export async function fromFile(file) {
-  const bmp = await createImageBitmap(file);
-  const s = Math.min(1, 1024 / Math.max(bmp.width, bmp.height));
+  let bmp;
+  try { bmp = await createImageBitmap(file); } catch { bmp = await viaImg(file); } // SVG, and formats only <img> decodes (e.g. HEIC in Safari)
+  const W = bmp.width || 512, H = bmp.height || 512; // an SVG may have no size of its own
+  const s = Math.min(1, 1024 / Math.max(W, H));
   const cv = document.createElement('canvas');
-  cv.width = Math.max(1, Math.round(bmp.width * s)); cv.height = Math.max(1, Math.round(bmp.height * s));
+  cv.width = Math.max(1, Math.round(W * s)); cv.height = Math.max(1, Math.round(H * s));
   const ctx = cv.getContext('2d');
   ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, cv.width, cv.height);
   ctx.drawImage(bmp, 0, 0, cv.width, cv.height);
   return fromCanvas(cv);
+}
+
+function viaImg(file) {
+  return new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(file), img = new Image();
+    img.onload = () => { URL.revokeObjectURL(url); resolve(img); };
+    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('not an image')); };
+    img.src = url;
+  });
 }
 
 // The optimizer lays every desired image on the ground in one fixed orientation (image rows along x,

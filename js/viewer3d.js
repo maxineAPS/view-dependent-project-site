@@ -2,8 +2,8 @@
 // optimizer). Optional "post-optimization projection": each desired image is projected along its camera
 // direction onto the faces that camera can see (traced through the heightfield per pixel), later cameras
 // overwriting earlier ones, as in create_mesh.py's projection step.
-import * as THREE from '../vendor/three.module.min.js?v=e24ea5f4';
-import { OrbitControls } from '../vendor/OrbitControls.js?v=e24ea5f4';
+import * as THREE from '../vendor/three.module.min.js';
+import { OrbitControls } from '../vendor/OrbitControls.js';
 
 const VERT = /* glsl */ `
 in vec3 barColor;
@@ -239,7 +239,11 @@ export class HeightfieldViewer {
         this.uniforms[`uImg${q}`].value = t;
       });
     }
-    // camera arrows
+    // camera arrows (free the old labels' textures and the materials; the arrow geometries are shared by three.js)
+    this.camGroup.traverse((o) => {
+      if (o.isSprite) { o.material.map.dispose(); o.material.dispose(); }
+      else if (o.isLine || o.isMesh) o.material.dispose();
+    });
     this.camGroup.clear();
     this.cams.forEach((d, q) => {
       const dir = new THREE.Vector3(...d);
@@ -261,7 +265,7 @@ export class HeightfieldViewer {
   // Post-optimization projection: show the baked, textured mesh (exactly what the download contains)
   setProjection(on) { this.projectionOn = on; this._applyProjection(); }
   setTextured(baked) {
-    if (this.texMesh) { this.scene.remove(this.texMesh); this.texMesh.geometry.dispose(); this.texMesh.material.map.dispose(); this.texMesh.material.dispose(); }
+    this._dropTexMesh();
     const g = new THREE.BufferGeometry();
     g.setAttribute('position', new THREE.BufferAttribute(baked.mesh.pos, 3));
     g.setAttribute('normal', new THREE.BufferAttribute(baked.mesh.nor, 3));
@@ -280,7 +284,14 @@ export class HeightfieldViewer {
     this.scene.add(this.texMesh);
     this._applyProjection();
   }
-  clearTextured() { if (this.texMesh) { this.scene.remove(this.texMesh); this.texMesh = null; } this._applyProjection(); }
+  clearTextured() { this._dropTexMesh(); this._applyProjection(); }
+  // remove the projected mesh and free its geometry, texture (a shader uniform) and material
+  _dropTexMesh() {
+    if (!this.texMesh) return;
+    this.scene.remove(this.texMesh);
+    this.texMesh.geometry.dispose(); this.texMesh.material.uniforms.map.value.dispose(); this.texMesh.material.dispose();
+    this.texMesh = null;
+  }
   _applyProjection() {
     const show = !!(this.projectionOn && this.texMesh);
     if (this.texMesh) this.texMesh.visible = show;
