@@ -112,7 +112,7 @@ export class HeightfieldViewer {
     this.engaged = false;
     container.addEventListener('pointerdown', () => { this.engaged = true; }, true);
     container.addEventListener('pointerleave', () => { this.engaged = false; });
-    this.wheelHint = Object.assign(document.createElement('div'), { className: 'wheel-hint', textContent: 'Hold Ctrl (⌘ on a Mac) and scroll to zoom, or click the view first' });
+    this.wheelHint = Object.assign(document.createElement('div'), { className: 'wheel-hint', textContent: 'To zoom, click the view first or hold Ctrl (⌘)' });
     container.appendChild(this.wheelHint);
     container.addEventListener('wheel', (e) => {
       if (this.engaged || e.ctrlKey || e.metaKey) return;

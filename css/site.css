@@ -281,3 +281,6 @@ html body :is(code, pre, textarea, .code-file, .out), html body .jscell .out { f
   html body :is(input, select) { font-size: 16px !important; }
   .opt-grid input[type=number] { width: 104px; }
 }
+/* notice at the top of both pages */
+.newbar { background: #fff8e6; border-bottom: 1px solid #f1dfae; color: #5c4a14; font-size: 0.84rem; line-height: 1.4; text-align: center; padding: 6px 16px; }
+.newbar a { color: inherit; font-weight: 500; text-decoration: underline; }

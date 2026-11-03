@@ -12,9 +12,11 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Noto+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/site.css?v=a7115a82">
+<link rel="stylesheet" href="css/site.css?v=bc456d57">
 </head>
 <body class="app-page">
+<div class="newbar" role="note">This live walkthrough is new. Please <a id="bug-link" href="mailto:max1@mit.edu?subject=Bug%20report%3A%20view-dependent%20surfaces%20walkthrough">report bugs or issues</a> to max1@mit.edu.</div>
+<script>document.getElementById('bug-link').href += '&body=' + encodeURIComponent('Page: ' + location.href + '\n\n');</script>
 
 <header class="app-bar">
   <a class="app-title" href="index.html">Constructing Printable Surfaces with View-Dependent Appearance</a>
@@ -31,8 +33,8 @@
     <div>
       <p class="kicker">Design tool</p>
       <h2>Design your own view-dependent surface</h2>
-      <p class="muted">Choose up to four viewing directions and an image for each, then run the optimizer from the paper: simulated annealing, coarse-to-fine subdivision, alternating colour and height updates, and regularization. The settings below are the arguments of <code>grad_descent()</code>. The result can be downloaded as a printable textured mesh, in the same format as <code>reproject.py</code> writes.</p>
-      <p class="muted small">Each image is rotated to face its own camera before optimizing, so it appears upright from that view. (The Python code uses the same orientation for every image.)</p>
+      <p class="muted">Pick up to four viewing directions and an image for each. Press Optimize to run the optimizer from the paper, then download the result as a printable mesh. The settings below are the arguments of <code>grad_descent()</code>.</p>
+      <p class="muted small">Each image is turned to face its camera, so it looks upright from that view. The Python code does not do this.</p>
     </div>
     <label class="scenario">Start from <select data-r="preset">
       <option value="sunmoon" selected>Sun / Moon (2 views)</option>
@@ -61,9 +63,9 @@
       </div>
       <div class="steps-bar">
         <button class="btn step-btn" data-r="run"><span class="step-n">1</span> Optimize</button>
-        <button class="btn step-btn primary" data-r="step2" disabled><span class="step-n">2</span> Project &amp; make printable</button>
+        <button class="btn step-btn primary" data-r="step2" disabled><span class="step-n">2</span> Project</button>
+        <button class="btn step-btn" data-r="download" disabled><span class="step-n">3</span> Download printable mesh</button>
         <button class="btn" data-r="stop" disabled>■ Stop</button>
-        <button class="btn" data-r="download" disabled>⤓ Download printable mesh</button>
       </div>
       <p class="status" data-r="status" aria-live="polite">Pick views and pictures, then press Optimize.</p>
       <div class="chart-wrap"><canvas data-r="chart"></canvas></div>
@@ -81,7 +83,7 @@
           <label>optimizer <select data-opt="optim"><option>Adam</option><option>SGD</option></select></label>
           <label>seed <input type="number" placeholder="random" data-opt="seed"></label>
         </div>
-        <p class="muted small opt-note">Runs longer than 300 steps stay at 32×32 bars and 64×64 rays per view (the Python code keeps subdividing every 100 steps).</p>
+        <p class="muted small opt-note">After step 300 the bars are not split any further. The Python code keeps splitting them every 100 steps.</p>
       </details>
     </div>
   </div>
@@ -90,12 +92,13 @@
 <section class="app-help prose">
   <h2>How to use it</h2>
   <ol>
-    <li><b>Views.</b> Each card is one viewing direction (azimuth and elevation, in degrees) and the picture seen from it. Click a picture to upload your own (PNG or JPEG), or pick a built-in target. Two to four views work; views closer than about 40° apart compete for the same bar faces.</li>
-    <li><b>Step 1: Optimize.</b> Runs <code>grad_descent()</code> live: annealing, coarse to fine subdivision, alternating colour and height updates. The chart shows the loss of each view.</li>
-    <li><b>Step 2: Project &amp; make printable.</b> Projects each picture onto the vertical segments of the bars its camera sees (as in the paper), blends overlapping views, slices the surface thin and builds a closed textured mesh.</li>
-    <li><b>Look from view</b> on a card shows the surface along that camera direction. <b>Download</b> gives the mesh (OBJ, MTL and texture) plus the heights, colours and cameras as files the repository’s <code>reproject.py</code> reads.</li>
+    <li><b>Views.</b> Each card is one viewing direction and the image you want to see from it. Pick an image from the list or upload your own. Use two to four views, at least 40° apart.</li>
+    <li><b>Step 1: Optimize.</b> Runs the optimizer. The chart shows the loss for each view.</li>
+    <li><b>Step 2: Project.</b> Projects each image onto the sides of the bars its camera sees, and builds a closed, textured mesh.</li>
+    <li><b>Step 3: Download printable mesh.</b> Saves the mesh (OBJ, MTL and PNG) and the optimized heights and colours, which <code>reproject.py</code> can read.</li>
+    <li><b>Look from view</b> on a card shows the surface from that camera.</li>
   </ol>
-  <p class="muted small">Everything runs in your browser and images are not uploaded. We ported the code release from Python and PyTorch to JavaScript for this page. The method is explained in the <a href="index.html">walkthrough</a>.</p>
+  <p class="muted small">Everything runs in your browser, and your images are not uploaded. We ported the code from Python to JavaScript for this page. The method is explained in the <a href="index.html">walkthrough</a>.</p>
 </section>
 </main>
 
@@ -104,6 +107,6 @@
   <!-- hidden until the code repository is public: <p class="small">The code has been updated since the paper (v2.0); the original release is available as v1.0.</p> -->
 </footer>
 
-<script type="module" src="js/ui.js?v=a7115a82"></script>
+<script type="module" src="js/ui.js?v=bc456d57"></script>
 </body>
 </html>

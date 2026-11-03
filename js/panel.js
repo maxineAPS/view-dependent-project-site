@@ -1,12 +1,12 @@
 // The live optimizer panel (used by the walkthrough page and the standalone UI page).
-import * as core from './vd-core.js?v=a7115a82';
-import { HeightfieldViewer, CAM_COLORS } from './viewer3d.js?v=a7115a82';
-import { LossChart } from './widgets.js?v=a7115a82';
-import { PRESETS, makeTarget, fromFile, paint, solid, noiseImage, stripesBW, orient, display } from './targets.js?v=a7115a82';
+import * as core from './vd-core.js?v=bc456d57';
+import { HeightfieldViewer, CAM_COLORS } from './viewer3d.js?v=bc456d57';
+import { LossChart } from './widgets.js?v=bc456d57';
+import { PRESETS, makeTarget, fromFile, paint, solid, noiseImage, stripesBW, orient, display } from './targets.js?v=bc456d57';
 
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
-const workerUrl = new URL('./worker.js?v=a7115a82', import.meta.url);
+const workerUrl = new URL('./worker.js?v=bc456d57', import.meta.url);
 
 // ---------------------------------------------------------------------------------------------
 // Live optimizer panel (hero demo + playground)
@@ -33,8 +33,8 @@ export class OptimizerPanel {
     this.renderViews();
     this.preview();
     if (autostart) {
-      // start as soon as any of the panel is on screen (on a phone the panel is several screens tall)
-      const io = new IntersectionObserver((ents) => { if (ents.some((e) => e.isIntersecting)) { io.disconnect(); this.run(); } }, { threshold: 0 });
+      // start once the panel is on screen or nearly so (on a small phone its top can sit just below the first screen)
+      const io = new IntersectionObserver((ents) => { if (ents.some((e) => e.isIntersecting)) { io.disconnect(); this.run(); } }, { threshold: 0, rootMargin: '0px 0px 300px 0px' });
       io.observe(root);
     }
   }
@@ -141,7 +141,7 @@ export class OptimizerPanel {
     this.preview();
   }
 
-  setSteps({ step2, download, project, label = 'Project &amp; make printable' }) {
+  setSteps({ step2, download, project, label = 'Project' }) {
     const s2 = $('[data-r=step2]', this.root); if (s2) { s2.disabled = !step2; s2.innerHTML = `<span class="step-n">2</span> ${label}`; }
     const dl = $('[data-r=download]', this.root); if (dl) dl.disabled = !download;
     const pr = $('[data-r=project]', this.root); if (pr) { pr.disabled = !project; pr.checked = project; }
@@ -157,7 +157,7 @@ export class OptimizerPanel {
       minAng = Math.min(minAng, (Math.acos(d) * 180) / Math.PI);
     }
     w.hidden = minAng >= 40;
-    w.textContent = `Two views are only ${minAng.toFixed(0)}° apart. Views that are close together compete for the same bars, so expect a higher loss. In the paper, two views work well when they differ by more than about 40° in elevation or 60° in azimuth.`;
+    w.textContent = `Two views are only ${minAng.toFixed(0)}° apart. Views this close share the same bars, so the result will be less accurate. Views work best at least 40° apart in elevation or 60° in azimuth.`;
   }
 
   setRunning(on) {
@@ -181,7 +181,7 @@ export class OptimizerPanel {
     this.chart.reset(cfg.epochs || 295);
     this.viewer.setCameras(this.cams(), this.textures());
     this.t0 = performance.now();
-    this.setStatus('Starting… simulated annealing on the initial flat surface');
+    this.setStatus('Starting with simulated annealing…');
     this.runViews = this.views.map((v) => ({ ...v }));
     const speed = $('[data-r=speed]', this.root);
     this.worker.postMessage({ type: 'run', id: this.runId, cfg, cams: this.cams(), images: this.inputs(), pace: speed ? +speed.value : this.pace, frameMs: 40 });
@@ -192,7 +192,7 @@ export class OptimizerPanel {
     if (this.worker && this.running) this.worker.postMessage({ type: 'stop' });
     this.setRunning(false);
     if (!silent && was) {
-      this.setStatus(this.last ? `Stopped at step ${this.last.step} · loss per view <b>${this.last.perView.toFixed(3)}</b> · this result can still be projected (step 2)` : 'Stopped.');
+      this.setStatus(this.last ? `Stopped at step ${this.last.step} · loss per view <b>${this.last.perView.toFixed(3)}</b> · you can still run step 2` : 'Stopped.');
       if (this.last) this.setSteps({ step2: true, download: false, project: false });
     }
   }
@@ -204,7 +204,7 @@ export class OptimizerPanel {
       this.viewer.setTextured(m);
       this.setSteps({ step2: true, download: true, project: true, label: 'Projected ✓' });
       this.viewer.setProjection(true);
-      this.setStatus(`<b>Ready to print</b> · the images are projected onto the surface (per segment, blended by how directly each camera sees it) and the surface is sliced thin · ${m.faces} faces · ${(m.ms / 1000).toFixed(1)} s`);
+      this.setStatus(`<b>Ready to print</b> · images projected onto the surface · ${m.faces} faces · ${(m.ms / 1000).toFixed(1)} s`);
       return;
     }
     if (m.id !== this.runId) return;
@@ -239,7 +239,7 @@ export class OptimizerPanel {
     const tex = views.map((v) => orient(v.image, v.az, 256));
     this.setSteps({ step2: false, download: false, project: false, label: 'Projecting…' });
     this.viewer.clearTextured(); this.baked = null;
-    this.setStatus('Slicing the surface thin and projecting the images onto it…');
+    this.setStatus('Projecting the images onto the surface…');
     this.worker.postMessage({ type: 'bake', purpose: 'view', id: this.runId, H: m.H, u: m.u, S: m.S, COL: m.COL, cams: m.cams, planeZ: m.planeZ ?? 1, images: tex.map((t) => ({ n: t.width, data: t.data })) });
   }
 
@@ -280,7 +280,7 @@ Final loss per view: ${m.perView.toFixed(4)}
     a.href = URL.createObjectURL(blob); a.download = 'view_dependent_surface.zip';
     document.body.appendChild(a); a.click(); a.remove();
     setTimeout(() => URL.revokeObjectURL(a.href), 4000);
-    this.setStatus(`Downloaded: printable mesh with projected images (${baked.faces} faces, baked in ${(baked.ms / 1000).toFixed(1)} s) and the optimizer output.`);
+    this.setStatus(`Downloaded the printable mesh (${baked.faces} faces) and the optimizer output.`);
   }
 }
 

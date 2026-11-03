@@ -12,9 +12,11 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Noto+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/site.css?v=a7115a82">
+<link rel="stylesheet" href="css/site.css?v=bc456d57">
 </head>
 <body>
+<div class="newbar" role="note">This live walkthrough is new. Please <a id="bug-link" href="mailto:max1@mit.edu?subject=Bug%20report%3A%20view-dependent%20surfaces%20walkthrough">report bugs or issues</a> to max1@mit.edu.</div>
+<script>document.getElementById('bug-link').href += '&body=' + encodeURIComponent('Page: ' + location.href + '\n\n');</script>
 
 <nav class="toc" aria-label="Sections">
   <a href="#playground">Design tool</a>
@@ -50,9 +52,9 @@
     <div>
       <p class="kicker">Design tool</p>
       <h2>Design your own view-dependent surface</h2>
-      <p class="muted">Choose up to four viewing directions and an image for each, then run the optimizer from the paper: simulated annealing, coarse-to-fine subdivision, alternating colour and height updates, and regularization. The settings below are the arguments of <code>grad_descent()</code>. The result can be downloaded as a printable textured mesh, in the same format as <code>reproject.py</code> writes.</p>
-      <p class="muted small">The optimizer runs in your browser: we ported the code release from Python and PyTorch to JavaScript for this page. A full-page version is available as a <a href="app.html">standalone tool</a>.</p>
-      <p class="muted small">Each image is rotated to face its own camera before optimizing, so it appears upright from that view. (The Python code uses the same orientation for every image.)</p>
+      <p class="muted">Pick up to four viewing directions and an image for each. Press Optimize to run the optimizer from the paper, then download the result as a printable mesh. The settings below are the arguments of <code>grad_descent()</code>.</p>
+      <p class="muted small">It runs in your browser. We ported the code from Python to JavaScript for this page. There is also a <a href="app.html">full-page version</a> of the tool.</p>
+      <p class="muted small">Each image is turned to face its camera, so it looks upright from that view. The Python code does not do this.</p>
     </div>
     <label class="scenario">Start from <select data-r="preset">
       <option value="sunmoon" selected>Sun / Moon (2 views)</option>
@@ -81,9 +83,9 @@
       </div>
       <div class="steps-bar">
         <button class="btn step-btn" data-r="run"><span class="step-n">1</span> Optimize</button>
-        <button class="btn step-btn primary" data-r="step2" disabled><span class="step-n">2</span> Project &amp; make printable</button>
+        <button class="btn step-btn primary" data-r="step2" disabled><span class="step-n">2</span> Project</button>
+        <button class="btn step-btn" data-r="download" disabled><span class="step-n">3</span> Download printable mesh</button>
         <button class="btn" data-r="stop" disabled>■ Stop</button>
-        <button class="btn" data-r="download" disabled>⤓ Download printable mesh</button>
       </div>
       <p class="status" data-r="status" aria-live="polite">Pick views and pictures, then press Optimize.</p>
       <div class="chart-wrap"><canvas data-r="chart"></canvas></div>
@@ -101,7 +103,7 @@
           <label>optimizer <select data-opt="optim"><option>Adam</option><option>SGD</option></select></label>
           <label>seed <input type="number" placeholder="random" data-opt="seed"></label>
         </div>
-        <p class="muted small opt-note">Runs longer than 300 steps stay at 32×32 bars and 64×64 rays per view (the Python code keeps subdividing every 100 steps).</p>
+        <p class="muted small opt-note">After step 300 the bars are not split any further. The Python code keeps splitting them every 100 steps.</p>
       </details>
     </div>
   </div>
@@ -110,7 +112,7 @@
 <section class="prose" id="abstract">
   <h2>In short</h2>
   <p>We make 3D-printed surfaces that show a <b>different picture depending on where you look from</b>. The surface is a grid of coloured bars of different heights. From any direction, taller bars hide parts of the bars behind them, so each viewer sees a different mix of colours.</p>
-  <p>Designing such a surface by hand is impractical, so we optimize it with a <b>differentiable renderer for coloured heightfields</b>. It turns each camera ray into a one-dimensional problem with a closed-form colour, so the gradient of the image with respect to every height and colour is cheap to compute. A coarse-to-fine optimizer then adjusts heights and colours until each view matches its desired image. The result is printed directly on a full-colour UV (PolyJet) printer, with no lenses, coatings or extra fabrication steps.</p>
+  <p>Such a surface is hard to design by hand, so we optimize it. We use a <b>differentiable renderer for coloured heightfields</b>. It reduces each camera ray to a 1D problem with a closed-form colour, so gradients are cheap to compute. The optimizer adjusts heights and colours until each view matches its target image. The result is printed directly on a full-colour PolyJet printer, with no lenses or coatings.</p>
   <div class="steps">
     <a class="step" href="#rendering"><span class="n">1</span><b>Render</b><span>Slice the heightfield along each camera ray and read off the colour in closed form.</span></a>
     <a class="step" href="#objective"><span class="n">2</span><b>Differentiate</b><span>Use a smooth step in the backward pass so heights get gradients.</span></a>
@@ -124,14 +126,14 @@
   <h2>A differentiable renderer for heightfields</h2>
   <div class="two">
     <div>
-      <p>A heightfield is a matrix of bar heights <i>H</i> and a matrix of bar colours <i>C</i>. It is viewed by a set of orthographic cameras, each given just by a viewing direction. Weak perspective is a good model because the surfaces are shallow. For every camera <i>i</i> there is a desired image <i>D<sub>i</sub></i>, and the renderer produces the actual image <i>I<sub>i</sub></i>.</p>
-      <p>Each pixel is a ray. In the code, pixel centres are spread evenly over a horizontal plane above the unit square, at the current mean height of the surface, and each ray is traced back along the camera direction.</p>
+      <p>A heightfield is a matrix of bar heights <i>H</i> and a matrix of bar colours <i>C</i>. It is viewed by orthographic cameras, each given by a viewing direction. This is a good model because the surfaces are shallow. For every camera <i>i</i> there is a desired image <i>D<sub>i</sub></i>, and the renderer produces the actual image <i>I<sub>i</sub></i>.</p>
+      <p>Each pixel is a ray. In the code, the pixels lie on a grid over the surface, at its mean height, and each ray is traced back along the camera direction.</p>
     </div>
     <figure class="paper-fig"><img src="img/parameters.webp" alt="Diagram: heightfield H, C viewed by two cameras producing images I1, I2 compared with desired D1, D2" loading="lazy" width="900" height="766"><figcaption>Setup for two views (from the paper).</figcaption></figure>
   </div>
 
   <h3>Slicing the heightfield</h3>
-  <p>A 3D ray only ever meets the bars under its shadow on the ground plane. So we project the ray onto the <i>xy</i> plane, list the bars that the projected line crosses in order, and measure how far it travels through each one. That gives a <b>2D slice</b>: a row of bars with heights <i>h<sub>i</sub></i>, colours <i>c<sub>i</sub></i> and widths <i>w<sub>i</sub></i>, and a 2D ray entering it at height <i>o<sub>y</sub></i>.</p>
+  <p>A ray can only hit the bars directly below its path. So we project the ray onto the ground plane, list the bars it crosses in order, and measure how far it travels through each one. This gives a <b>2D slice</b>: a row of bars with heights <i>h<sub>i</sub></i>, colours <i>c<sub>i</sub></i> and widths <i>w<sub>i</sub></i>, and a 2D ray that enters it at height <i>o<sub>y</sub></i>.</p>
 
   <div class="figure-box" id="fig-slicing">
     <div class="fig-head"><b>Interactive:</b> drag the white pixel or the orange camera handle. Numbers are bar heights.</div>
@@ -154,7 +156,7 @@
 
   <div class="pyjs" data-cell="slice">
     <div class="pyjs-col">
-      <div class="pyjs-head"><span class="py-badge">Python</span> The repository’s <code>rendering.py</code>. <code>pixel</code> and <code>cam</code> are the pixel and camera in the figure above.</div>
+      <div class="pyjs-head"><span class="py-badge">Python</span> From <code>rendering.py</code>. <code>pixel</code> and <code>cam</code> come from the figure above.</div>
       <pre class="code pysnip" aria-label="Python code from the repository (read-only)"># traced back from z = 1, as in grad_descent.py
 origin = pixel - 20 * cam
 ids, widths, ray = rendering.get_2D_ray_info(origin, cam, 8)
@@ -164,7 +166,7 @@ print("widths:", np.round(widths, 3))
 print("o_y:", round(float(ray.origin.y), 3))</pre>
     </div>
     <div class="pyjs-col jscell">
-      <div class="pyjs-head"><span class="js-badge">JavaScript</span> The same steps in the JavaScript port used on this page. You can edit and run it; it also reruns when the figure changes.</div>
+      <div class="pyjs-head"><span class="js-badge">JavaScript</span> The same steps in JavaScript. You can edit and run this code. It also reruns when you move the figure.</div>
       <textarea class="jscode" spellcheck="false" aria-label="JavaScript code, editable. Tab indents; press Escape, then Tab, to leave.">// traced back from z = 1, as in grad_descent.py
 const origin = pixel.map((p, i) =&gt; p - 20 * cam[i]);
 const ray = core.rayInfo(origin, cam, 8);
@@ -178,11 +180,11 @@ print("o_y:", round(ray.oy, 3));</textarea>
   </div>
 
   <h3>Rendering a single pixel in closed form</h3>
-  <p>Inside a slice, back-trace a line through the far top corner of every bar, parallel to the ray, to the entry line <i>x</i> = 0. It meets that line at height</p>
+  <p>For each bar, trace a line back from its far top corner, parallel to the ray, to the line <i>x</i> = 0. It meets that line at height</p>
   <p class="math">y<sub>i</sub> = h<sub>i</sub> − (d<sub>y</sub> / d<sub>x</sub>) · W<sub>i</sub>, &nbsp;&nbsp; W<sub>i</sub> = w<sub>0</sub> + … + w<sub>i</sub> <span class="eq">(1)</span></p>
-  <p>where (d<sub>x</sub>, d<sub>y</sub>) is the direction of the 2D ray, which points down. For equal widths <i>w</i>, W<sub>i</sub> = (i+1)·w. A ray entering at height <i>o<sub>y</sub></i> passes over bar <i>i</i> exactly when <i>o<sub>y</sub></i> &gt; <i>y<sub>i</sub></i>. A bar can be completely hidden by an earlier, taller one, so the boundaries are first made monotonic with a running maximum <i>y′<sub>i</sub></i> = max(<i>y</i><sub>0</sub>, …, <i>y<sub>i</sub></i>). With the step function <i>g</i>, the colour of the ray is then a telescoping sum:</p>
+  <p>where (d<sub>x</sub>, d<sub>y</sub>) is the direction of the 2D ray, which points down. A ray entering at height <i>o<sub>y</sub></i> passes over bar <i>i</i> when <i>o<sub>y</sub></i> &gt; <i>y<sub>i</sub></i>. A tall bar can hide the bars behind it, so we take a running maximum <i>y′<sub>i</sub></i> = max(<i>y</i><sub>0</sub>, …, <i>y<sub>i</sub></i>). With the step function <i>g</i>, the colour of the ray is a telescoping sum:</p>
   <p class="math">color(p) = c<sub>0</sub> + Σ<sub>i</sub> g(o<sub>y</sub> − y′<sub>i</sub>) · (c<sub>i+1</sub> − c<sub>i</sub>)</p>
-  <p>Every bar the ray clears adds the difference to the next colour, so the sum stops at the colour of the first bar that blocks it, or at the last bar of the slice if the ray clears them all.</p>
+  <p>Each bar the ray passes over moves the colour on to the next bar. The sum ends at the first bar that blocks the ray, or at the last bar if none does.</p>
 
   <div class="figure-box" id="fig-slice">
     <div class="fig-head"><b>Interactive:</b> drag bar tops to change heights, click a bar to change its colour, drag the black dot (<i>o<sub>y</sub></i>) up and down.</div>
@@ -203,7 +205,7 @@ print("o_y:", round(ray.oy, 3));</textarea>
     </div>
     <p class="fig-info"><span class="swatch big" data-r="swatch"></span> <span data-r="formula"></span></p>
     <div class="table-scroll"><table class="eq-table" data-r="table"></table></div>
-    <p class="muted small">The two strips on the right are the one-dimensional images of this slice: what all the parallel rays see from this side and from the opposite side. The same bars show different colours from the two sides. With “Show gradients”, the purple arrows show how each height should move to bring the pixel closer to the target colour you pick, using the smooth step’s derivative described below.</p>
+    <p class="muted small">The two strips on the right show what all parallel rays see from this side and from the other side. The same bars show different colours from each side. “Show gradients” draws purple arrows that show how each height should move to bring the pixel closer to a target colour you pick.</p>
   </div>
 
   <details class="code-details">
@@ -214,7 +216,7 @@ print("o_y:", round(ray.oy, 3));</textarea>
 
   <div class="pyjs" data-cell="pixel" data-uses="ray">
     <div class="pyjs-col">
-      <div class="pyjs-head"><span class="py-badge">Python</span> The same pixel, rendered by the repository’s functions. <code>H</code> and <code>COL</code> are the heights and colours in the slicing figure; <code>ids</code>, <code>widths</code> and <code>ray</code> come from the cell above.</div>
+      <div class="pyjs-head"><span class="py-badge">Python</span> The same pixel, rendered with <code>rendering.py</code>. <code>H</code> and <code>COL</code> are the heights and colours from the slicing figure. <code>ids</code>, <code>widths</code> and <code>ray</code> come from the cell above.</div>
       <pre class="code pysnip" aria-label="Python code from the repository (read-only)">width_sums = rendering.get_width_sums(widths)
 thetas = rendering.get_backtraced_boundaries(H, ray, width_sums, ids)  # Eq. 1
 mono = rendering.monotonize_boundary_points(thetas)  # running maximum
@@ -226,7 +228,7 @@ print("o_y      :", round(float(ray.origin.y), 3))
 print("pixel colour (RGB):", np.round(color.numpy(), 3))</pre>
     </div>
     <div class="pyjs-col jscell">
-      <div class="pyjs-head"><span class="js-badge">JavaScript</span> The same pixel in the JavaScript port. <code>ray</code> is the slice of the pixel in the figure, as in the cell above.</div>
+      <div class="pyjs-head"><span class="js-badge">JavaScript</span> The same pixel in JavaScript. <code>ray</code> is the slice from the cell above.</div>
       <textarea class="jscode" spellcheck="false" aria-label="JavaScript code, editable. Tab indents; press Escape, then Tab, to leave.">const heights = ray.ids.map(([a, b]) =&gt; H[a][b]);
 const colors = ray.ids.map(([a, b]) =&gt; COL[a][b]);
 const slope = ray.d2y / ray.d2x;  // &lt; 0: the 2D ray goes down
@@ -243,18 +245,18 @@ print("pixel colour (RGB):", round(s.color, 3));</textarea>
   </div>
 
   <h3>Rendering all pixels, and repeating units</h3>
-  <p>A camera image is all of its rays rendered this way. The slicing only depends on the camera and the bar grid, never on the heights, so the code computes it once per resolution (<code>process_rays</code>) and reuses it at every optimization step. To reproduce a repeated pattern, the heights are optimized for a smaller unit that is tiled across the surface, with occlusion across tiles taken into account. In the code, the height unit is tiled 2×2 while every bar keeps its own colour.</p>
+  <p>A camera image is made of many such rays. The slices depend only on the camera and the bar grid, not on the heights, so the code computes them once (<code>process_rays</code>) and reuses them at every step. For repeated patterns, the heights of a smaller unit are optimized and tiled across the surface. In the code, the heights repeat 2×2, while every bar has its own colour.</p>
 
   <div class="pyjs" data-cell="image">
     <div class="pyjs-col">
-      <div class="pyjs-head"><span class="py-badge">Python</span> Render the full 16×16 image seen by the camera in the slicing figure with <code>render_camera</code>.</div>
+      <div class="pyjs-head"><span class="py-badge">Python</span> The full 16×16 image seen by the camera in the slicing figure, rendered with <code>render_camera</code>.</div>
       <pre class="code pysnip" aria-label="Python code from the repository (read-only)">n = 16
 origins = [np.array([(i + .5) / n, (k + .5) / n, 1.0]) - 20 * cam for i in range(n) for k in range(n)]
 packs = [rendering.process_rays(origins, cam, 8)]
 image = rendering.render_camera(H, COL, packs, 1, num_repeats=1, heaviside_fn="tan")[0]</pre>
     </div>
     <div class="pyjs-col jscell">
-      <div class="pyjs-head"><span class="js-badge">JavaScript</span> The same image, rendered by the JavaScript port.</div>
+      <div class="pyjs-head"><span class="js-badge">JavaScript</span> The same image in JavaScript.</div>
       <textarea class="jscode" spellcheck="false" aria-label="JavaScript code, editable. Tab indents; press Escape, then Tab, to leave.">const n = 16;
 const rays = core.processRays(cam, n, 8);  // slicing, once per resolution
 const image = core.renderCamera(Float32Array.from(H.flat()), 8, 1, Float32Array.from(COL.flat(2)), rays);
@@ -273,13 +275,13 @@ print("pixels:", image.length / 3);</textarea>
   <h2>Objective function</h2>
   <p>We minimize the pixel-wise mean squared error between the rendered and desired images of all cameras. With <i>m</i>×<i>m</i> images:</p>
   <p class="math">min<sub>H,C</sub> &nbsp; 1/(m² |CAM|) · Σ<sub>i</sub> Σ<sub>x,y</sub> ( D<sub>i</sub>(x,y) − forward(cam<sub>i</sub>, H, C)(x,y) )²</p>
-  <p>The loss values shown on this page are this average per view.</p>
+  <p>The loss values on this page are this error, per view.</p>
 
   <h3>Smooth Heaviside approximations</h3>
-  <p>The step function <i>g</i> has no useful derivative, so heights would never receive a gradient. We replace it by a smooth approximation λ(x, k), where <i>k</i> controls the amount of smoothing. In our ablation, with two opposite cameras at 45° elevation (one solid white, one solid black), the tanh approximation worked best, so it is the default. In the implementation, each approximation is a custom autograd function: the forward pass keeps the exact step, so the rendered image stays exact, and the approximation’s derivative is used in the backward pass.</p>
+  <p>The step function <i>g</i> has zero slope almost everywhere, so the heights would get no gradient. We replace it with a smooth approximation λ(x, k), where <i>k</i> sets the amount of smoothing. In our tests, tanh worked best, so it is the default. The forward pass still uses the exact step, so the rendered image stays exact. Only the backward pass uses the smooth version.</p>
 
   <div class="figure-box" id="fig-heaviside">
-    <div class="fig-head"><b>Interactive:</b> the five approximations (solid) and, dashed, the derivative used for the selected one. The dotted black line is the exact step used in the forward pass.</div>
+    <div class="fig-head"><b>Interactive:</b> the five approximations (solid) and the derivative of the selected one (dashed). The dotted black line is the exact step.</div>
     <div class="fig-canvas-wrap"><canvas aria-label="Plot of Heaviside approximations"></canvas></div>
     <div class="fig-controls">
       <span class="fn-btns" data-r="fns">
@@ -315,7 +317,7 @@ for name, fn in [("tanh", happrox.heavi_tanh_fn), ("erfc", happrox.heavi_erfc_fn
     print(f"{name:6s} forward:", fn(x, 0.1))</pre>
     </div>
     <div class="pyjs-col jscell">
-      <div class="pyjs-head"><span class="js-badge">JavaScript</span> The same in the JavaScript port.</div>
+      <div class="pyjs-head"><span class="js-badge">JavaScript</span> The same in JavaScript.</div>
       <textarea class="jscode" spellcheck="false" aria-label="JavaScript code, editable. Tab indents; press Escape, then Tab, to leave.">const x = [-1.0, -0.1, 0.0, 0.1, 1.0];
 for (const [name, fn] of [["tanh", core.HEAVISIDE.tan], ["erfc", core.HEAVISIDE.erfc], ["circle", core.HEAVISIDE.circ]])
   print(name.padEnd(6), "forward:", x.map((v) =&gt; fn.fwd(v, 0.1)));</textarea>
@@ -330,9 +332,9 @@ for (const [name, fn] of [["tanh", core.HEAVISIDE.tan], ["erfc", core.HEAVISIDE.
   </details>
 
   <h3>Regularization</h3>
-  <p>Two extra terms keep the surface printable. A <b>barrier loss</b> keeps every height between <i>h<sub>min</sub></i> and <i>h<sub>max</sub></i>, and a <b>neighbour loss</b> penalizes height differences between adjacent bars, so there are no thin spikes that break or deep troughs that cast strong shadows:</p>
+  <p>Two extra terms keep the surface printable. A <b>barrier loss</b> keeps every height between <i>h<sub>min</sub></i> and <i>h<sub>max</sub></i>. A <b>neighbour loss</b> penalizes height differences between adjacent bars, which avoids thin spikes and deep gaps:</p>
   <p class="math">barrier = −Σ<sub>i</sub> log(h<sub>max</sub> − h<sub>i</sub>) − Σ<sub>i</sub> log(h<sub>i</sub> − h<sub>min</sub>), &nbsp;&nbsp; neighbour = Σ<sub>i</sub> Σ<sub>j ∈ N(i)</sub> |h<sub>i</sub> − h<sub>j</sub>|</p>
-  <p>Regularization costs some accuracy (Table 1 of the paper), but the trade-off is necessary for surfaces that survive printing. The original release (v1.0) uses <i>h<sub>min</sub></i> = 0.1, <i>h<sub>max</sub></i> = 1.5 and weights of 0.02 (barrier) and 0.5 (neighbour, summed over the interior bars). The current release (v2.0) uses <i>h<sub>max</sub></i> = 1.0 and compares every bar with its four neighbours, wrapping around the repeating unit, averaged over the bars with weight 1.0; this removes thin spikes that could form along the seams between repeats.</p>
+  <p>Regularization costs some accuracy (Table 1), but it is needed for surfaces that survive printing. The original code (v1.0) uses <i>h<sub>min</sub></i> = 0.1, <i>h<sub>max</sub></i> = 1.5, and weights 0.02 (barrier) and 0.5 (neighbour). The updated code (v2.0) uses <i>h<sub>max</sub></i> = 1.0. Its neighbour loss also compares bars across the edges of the repeating unit, which avoids spikes along the seams.</p>
   <div class="two">
     <div class="table-scroll">
       <table class="data num">
@@ -347,7 +349,7 @@ for (const [name, fn] of [["tanh", core.HEAVISIDE.tan], ["erfc", core.HEAVISIDE.
     </div>
     <div class="pyjs narrow" data-cell="reg">
       <div class="pyjs-col">
-        <div class="pyjs-head"><span class="py-badge">Python</span> <code>opt.py</code> on the heights from the slicing figure, with the v1.0 height range (some heights are above 1.0).</div>
+        <div class="pyjs-head"><span class="py-badge">Python</span> <code>opt.py</code> on the heights from the slicing figure, with the v1.0 height range.</div>
         <pre class="code pysnip" aria-label="Python code from the repository (read-only)">print("barrier  :", round(float(opt.barrier_fn(H, min_val=0.1, max_val=1.5)), 4))
 print("neighbour:", round(float(opt.neighbor_fn(H)), 4), "  v2.0:", round(float(opt.neighbor_fn_wrap(H)), 4))
 spiky = H.clone()
@@ -355,7 +357,7 @@ spiky[3, 4] = 1.45  # one tall spike
 print("with a spike:", round(float(opt.barrier_fn(spiky, 0.1, 1.5)), 4), round(float(opt.neighbor_fn(spiky)), 4), round(float(opt.neighbor_fn_wrap(spiky)), 4))</pre>
       </div>
       <div class="pyjs-col jscell">
-        <div class="pyjs-head"><span class="js-badge">JavaScript</span> The same in the JavaScript port.</div>
+        <div class="pyjs-head"><span class="js-badge">JavaScript</span> The same in JavaScript.</div>
         <textarea class="jscode" spellcheck="false" aria-label="JavaScript code, editable. Tab indents; press Escape, then Tab, to leave.">const h = Float32Array.from(H.flat());
 print("barrier  :", round(core.barrier(h, 8, 0.1, 1.5), 4));
 print("neighbour:", round(core.neighbor(h, 8), 4), "  v2.0:", round(core.neighbor(h, 8, null, 1, "wrap"), 4));
@@ -372,17 +374,17 @@ print("with a spike:", round(core.barrier(spiky, 8, 0.1, 1.5), 4), round(core.ne
 <section class="prose" id="optimization">
   <p class="kicker">Section 5</p>
   <h2>Optimization</h2>
-  <p>The basic optimizer is Adam on the MSE loss. Three additions make it work much better (Table 3 of the paper):</p>
+  <p>The optimizer is Adam on the MSE loss, with three additions (Table 3 of the paper):</p>
   <ul class="bullets">
-    <li><b>Coarse to fine.</b> Each bar is periodically split into a 2×2 block with the same height and colour. The surface starts at 8×8 bars and ends at 32×32 bars. This acts as extra regularization and improves the result.</li>
-    <li><b>Alternating block coordinate descent.</b> Heights and colours are updated in alternating blocks of steps instead of together. This is much better than updating both at every step.</li>
-    <li><b>Simulated annealing.</b> Random perturbations of all heights and colours at the start help escape poor local optima. This step is optional; leave it out if you want a more uniform pattern.</li>
+    <li><b>Coarse to fine.</b> Every 100 steps, each bar is split into 2×2 smaller bars. The surface starts with 8×8 bars and ends with 32×32. This improves the result.</li>
+    <li><b>Alternating block coordinate descent.</b> Heights and colours are updated in turns, not together. This works much better.</li>
+    <li><b>Simulated annealing.</b> Random changes to the heights and colours at the start help avoid poor local optima. This step is optional. Without it, the pattern is more uniform.</li>
   </ul>
-  <p>After optimization, the desired images are projected back onto the surface from their cameras, which gives higher-resolution detail at no extra optimization cost. In the code release, every point of the surface is coloured from the cameras that see it, weighted by how directly each camera sees it. Press “2 · Project &amp; make printable” in the design tool to see it: the surface is also sliced thin (every bar is lowered by the same amount, which does not change what any camera sees), and the download contains this printable mesh.</p>
+  <p>After optimizing, the target images are projected back onto the surface from their cameras. This adds detail finer than the bars. Each point is coloured from the cameras that see it, weighted by how directly they see it. To try it, press “2 · Project” in the design tool. This also trims the surface to a thin base, and the download contains the printable mesh.</p>
 
   <div class="table-scroll">
     <table class="data settings">
-      <caption>Settings of the code release (v2.0), also used on this page</caption>
+      <caption>Settings of the code (v2.0), also used on this page</caption>
       <tr><th>step</th><th>setting</th><th>where</th></tr>
       <tr><td>initial surface</td><td>uniform heights 0.5, white colours; height unit 4×4 tiled 2×2 (8×8 bars)</td><td><code>optimize_surface.py</code></td></tr>
       <tr><td>length</td><td><code>num_epochs</code> = 295, i.e. 294 gradient steps (the design tool runs 600 by default)</td><td><code>optimize_surface.py</code></td></tr>
@@ -418,7 +420,7 @@ print("with a spike:", round(core.barrier(spiky, 8, 0.1, 1.5), 4), round(core.ne
 
   <div class="table-scroll">
     <table class="data num">
-      <caption>Loss after 100 steps, two views, for combinations of the optimization techniques (Table 3 of the paper; “all three” is coarse to fine + coordinate descent + annealing)</caption>
+      <caption>Loss after 100 steps with two views, for each technique (Table 3 of the paper). “All three” combines coarse to fine, coordinate descent and annealing.</caption>
       <tr><th>camera 1</th><th>camera 2</th><th>none</th><th>coarse to fine</th><th>coordinate descent</th><th>all three</th></tr>
       <tr><td>black</td><td>white</td><td>0.136</td><td>0.067</td><td>0.107</td><td><b>0.011</b></td></tr>
       <tr><td>random</td><td>random</td><td>0.124</td><td>0.099</td><td>0.108</td><td><b>0.093</b></td></tr>
@@ -427,7 +429,7 @@ print("with a spike:", round(core.barrier(spiky, 8, 0.1, 1.5), 4), round(core.ne
       <tr><td>random</td><td>stripes</td><td>0.203</td><td>0.205</td><td>0.180</td><td><b>0.057</b></td></tr>
     </table>
   </div>
-  <p class="muted small">The paper also compares initial configurations (flat, walls, cross, random); the code starts from a flat surface.</p>
+  <p class="muted small">The paper also compares different starting surfaces (flat, walls, cross, random). The code starts from a flat surface.</p>
   <div class="two">
     <figure class="paper-fig"><img src="img/inits.webp" alt="Renders of five initial surface configurations" loading="lazy" width="1306" height="522"><figcaption>Initial configurations studied in the paper.</figcaption></figure>
     <figure class="paper-fig"><img src="img/initconfigs.webp" alt="Convergence curves for different initial configurations" loading="lazy" width="1000" height="663"><figcaption>Convergence for each initial configuration (four views, from the paper).</figcaption></figure>
@@ -437,7 +439,7 @@ print("with a spike:", round(core.barrier(spiky, 8, 0.1, 1.5), 4), round(core.ne
 <section class="prose" id="fabrication">
   <p class="kicker">Sections 6–8</p>
   <h2>Fabrication and results</h2>
-  <p>For the paper, the optimized heights and colours were converted into a mesh with material files in Blender (the code release now does this step in Python), then printed on a Stratasys J55 PolyJet UV printer. Strip tests showed that 300 dpi is printable without aliasing, which sets the minimum bar width. For very fine surfaces less than 1 cm wide, a layer of clear material on top keeps the thin bars from breaking; refraction in that layer reduces the effective viewing elevation.</p>
+  <p>For the paper, we turned the heights and colours into a coloured mesh in Blender and printed it on a Stratasys J55 PolyJet printer. The updated code builds the mesh in Python. Test prints showed that 300 dpi prints cleanly, which sets the smallest bar width. For surfaces under 1 cm wide, a clear top layer protects the thin bars. This layer bends light, which lowers the effective viewing angle.</p>
   <figure class="paper-fig wide"><img src="img/physresults.webp" alt="Photographs of printed surfaces from four and two directions" loading="lazy" width="2000" height="684"><figcaption>Printed surfaces. Top: one surface seen from four directions (elevation 60°) shows four unrelated patterns. Bottom: the Stanford Dragon and the Stanford Bunny on the same surface (elevation 30°).</figcaption></figure>
   <div class="two">
     <figure class="paper-fig"><img src="img/checks.webp" alt="Render and photograph of the same surface" loading="lazy" width="1100" height="702"><figcaption>Rendered (top) and printed (bottom) versions of the same surface match closely.</figcaption></figure>
@@ -445,11 +447,11 @@ print("with a spike:", round(core.barrier(spiky, 8, 0.1, 1.5), 4), round(core.ne
   </div>
   <figure class="paper-fig wide"><img src="img/dogcat.webp" alt="Dog and cat surface printed at two bar widths" loading="lazy" width="1400" height="877"><figcaption>A dog from one side and a cat from the other, printed with wider (top) and narrower (bottom) bars. Narrow bars mix colours across views because the printing material is slightly translucent.</figcaption></figure>
   <h3>Optimization results</h3>
-  <p>Optimizations with the PyTorch implementation take 30 minutes to 2 hours. With five views the result shows some degradation compared with four. Pairs of views are compatible when they are far enough apart: beyond about 40° difference in elevation or 60° in azimuth, the two-view loss drops below 0.1.</p>
+  <p>With the PyTorch code, an optimization takes 30 minutes to 2 hours. Five views work less well than four. Two views work well when they differ by more than about 40° in elevation or 60° in azimuth.</p>
   <figure class="paper-fig wide"><img src="img/siggraph.webp" alt="Renders of surfaces optimized for five and four views" loading="lazy" width="1224" height="558"><figcaption>Optimized surfaces with five (top) and four (bottom) distinct desired views.</figcaption></figure>
-  <figure class="paper-fig wide"><img src="img/lenticular.webp" alt="Comparison with a lenticular surface" loading="lazy" width="1128" height="686"><figcaption>Comparison with lenticular objects at the highest resolution of the same printer. Top: desired appearances. Middle: lenticular surface. Bottom: our self-occluding surface, which captures sharper lines and finer detail, with slightly more colour contamination across views.</figcaption></figure>
+  <figure class="paper-fig wide"><img src="img/lenticular.webp" alt="Comparison with a lenticular surface" loading="lazy" width="1128" height="686"><figcaption>Comparison with lenticular prints at the printer’s highest resolution. Top: target images. Middle: lenticular print. Bottom: our surface, with sharper lines and finer detail, but slightly more colour mixing between views.</figcaption></figure>
   <h3>Limitations</h3>
-  <p>The method works for up to five distinct views in simulation and up to four in print. Unlike lenticular approaches, quality depends strongly on the relative azimuth and elevation of the cameras. Environment lighting and self-shadowing are not modelled; future work could compensate by lightening or darkening colours. In return, the method reaches high resolution, can share colours across views, and uses bright colours without the dark walls or lens lattices of earlier approaches.</p>
+  <p>The method works for up to five views in simulation and four in print. Unlike lenticular prints, quality depends a lot on the angles between the cameras. Lighting and self-shadowing are not modelled. Future work could correct for them by adjusting the colours. On the other hand, the method reaches high resolution, can share colours between views, and uses bright colours, without the dark walls or lens arrays of earlier methods.</p>
 </section>
 
 <section class="prose" id="citation">
@@ -470,6 +472,6 @@ print("with a spike:", round(core.barrier(spiky, 8, 0.1, 1.5), 4), round(core.ne
   <!-- hidden until the code repository is public: <p class="small">The code has been updated since the paper (v2.0); the original release is available as v1.0.</p> -->
 </footer>
 
-<script type="module" src="js/app.js?v=a7115a82"></script>
+<script type="module" src="js/app.js?v=bc456d57"></script>
 </body>
 </html>
