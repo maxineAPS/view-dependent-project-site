@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Noto+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/site.css?v=adfa0743">
+<link rel="stylesheet" href="css/site.css?v=7071d1c4">
 </head>
 <body class="app-page">
 
@@ -89,7 +89,7 @@
 <section class="app-help prose">
   <h2>How to use it</h2>
   <ol>
-    <li><b>Views.</b> Each card is one viewing direction (azimuth and elevation, in degrees) and the picture seen from it. Click a picture to upload your own (PNG or JPEG), or pick a built-in target. Two to four views work; views closer than about 30° apart compete for the same bar faces.</li>
+    <li><b>Views.</b> Each card is one viewing direction (azimuth and elevation, in degrees) and the picture seen from it. Click a picture to upload your own (PNG or JPEG), or pick a built-in target. Two to four views work; views closer than about 40° apart compete for the same bar faces.</li>
     <li><b>Step 1: Optimize.</b> Runs <code>grad_descent()</code> live: annealing, coarse to fine subdivision, alternating colour and height updates. Watch the bars grow and shrink; the chart shows the loss of each view.</li>
     <li><b>Step 2: Project &amp; make printable.</b> Projects each picture onto the vertical segments of the bars its camera sees (as in the paper), blends overlapping views, slices the surface thin and builds a closed textured mesh.</li>
     <li><b>Look from view</b> on a card shows the surface exactly along that camera. <b>Download</b> gives the mesh (OBJ, MTL and texture) plus the heights, colours and cameras as files the repository’s <code>reproject.py</code> reads.</li>
@@ -103,6 +103,6 @@
   <p class="small">The code has been updated since the paper (v2.0); the original release is available as v1.0.</p>
 </footer>
 
-<script type="module" src="js/ui.js?v=adfa0743"></script>
+<script type="module" src="js/ui.js?v=7071d1c4"></script>
 </body>
 </html>

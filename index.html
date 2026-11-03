@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Noto+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/site.css?v=adfa0743">
+<link rel="stylesheet" href="css/site.css?v=7071d1c4">
 </head>
 <body>
 
@@ -133,7 +133,7 @@ print("o_y:", round(float(ray.origin.y), 3))</pre>
     </div>
     <div class="pyjs-col jscell">
       <div class="pyjs-head"><span class="js-badge">JavaScript</span> The same steps in the JavaScript port that runs this page. Edit and run it; it reruns when you move the figure.</div>
-      <textarea class="jscode" spellcheck="false" aria-label="JavaScript code">// traced back from z = 1, as in grad_descent.py
+      <textarea class="jscode" spellcheck="false" aria-label="JavaScript code, editable. Tab indents; press Escape, then Tab, to leave.">// traced back from z = 1, as in grad_descent.py
 const origin = pixel.map((p, i) =&gt; p - 20 * cam[i]);
 const ray = core.rayInfo(origin, cam, 8);
 
@@ -195,7 +195,7 @@ print("pixel colour (RGB):", np.round(color.numpy(), 3))</pre>
     </div>
     <div class="pyjs-col jscell">
       <div class="pyjs-head"><span class="js-badge">JavaScript</span> The same pixel in the JavaScript port. <code>ray</code> is the slice of the pixel in the figure, as in the cell above.</div>
-      <textarea class="jscode" spellcheck="false" aria-label="JavaScript code">const heights = ray.ids.map(([a, b]) =&gt; H[a][b]);
+      <textarea class="jscode" spellcheck="false" aria-label="JavaScript code, editable. Tab indents; press Escape, then Tab, to leave.">const heights = ray.ids.map(([a, b]) =&gt; H[a][b]);
 const colors = ray.ids.map(([a, b]) =&gt; COL[a][b]);
 const slope = ray.d2y / ray.d2x;  // &lt; 0: the 2D ray goes down
 // Eq. 1, running maximum and colour sum
@@ -223,7 +223,7 @@ image = rendering.render_camera(H, COL, packs, 1, num_repeats=1, heaviside_fn="t
     </div>
     <div class="pyjs-col jscell">
       <div class="pyjs-head"><span class="js-badge">JavaScript</span> The same image in the JavaScript port, the renderer the optimizer on this page uses.</div>
-      <textarea class="jscode" spellcheck="false" aria-label="JavaScript code">const n = 16;
+      <textarea class="jscode" spellcheck="false" aria-label="JavaScript code, editable. Tab indents; press Escape, then Tab, to leave.">const n = 16;
 const rays = core.processRays(cam, n, 8);  // slicing, once per resolution
 const image = core.renderCamera(Float32Array.from(H.flat()), 8, 1, Float32Array.from(COL.flat(2)), rays);
 
@@ -284,7 +284,7 @@ for name, fn in [("tanh", happrox.heavi_tanh_fn), ("erfc", happrox.heavi_erfc_fn
     </div>
     <div class="pyjs-col jscell">
       <div class="pyjs-head"><span class="js-badge">JavaScript</span> The same in the JavaScript port.</div>
-      <textarea class="jscode" spellcheck="false" aria-label="JavaScript code">const x = [-1.0, -0.1, 0.0, 0.1, 1.0];
+      <textarea class="jscode" spellcheck="false" aria-label="JavaScript code, editable. Tab indents; press Escape, then Tab, to leave.">const x = [-1.0, -0.1, 0.0, 0.1, 1.0];
 for (const [name, fn] of [["tanh", core.HEAVISIDE.tan], ["erfc", core.HEAVISIDE.erfc], ["circle", core.HEAVISIDE.circ]])
   print(name.padEnd(6), "forward:", x.map((v) =&gt; fn.fwd(v, 0.1)));</textarea>
       <div class="cell-bar"><button class="btn small" data-r="run">▶ Run</button><button class="link-btn" data-r="reset">reset</button></div>
@@ -324,7 +324,7 @@ print("with a spike:", round(float(opt.barrier_fn(spiky, 0.1, 1.5)), 4), round(f
       </div>
       <div class="pyjs-col jscell">
         <div class="pyjs-head"><span class="js-badge">JavaScript</span> The same in the JavaScript port.</div>
-        <textarea class="jscode" spellcheck="false" aria-label="JavaScript code">const h = Float32Array.from(H.flat());
+        <textarea class="jscode" spellcheck="false" aria-label="JavaScript code, editable. Tab indents; press Escape, then Tab, to leave.">const h = Float32Array.from(H.flat());
 print("barrier  :", round(core.barrier(h, 8, 0.1, 1.5), 4));
 print("neighbour:", round(core.neighbor(h, 8), 4), "  v2.0:", round(core.neighbor(h, 8, null, 1, "wrap"), 4));
 const spiky = h.slice();
@@ -499,6 +499,6 @@ print("with a spike:", round(core.barrier(spiky, 8, 0.1, 1.5), 4), round(core.ne
   <p class="small">The code has been updated since the paper (v2.0); the original release is available as v1.0.</p>
 </footer>
 
-<script type="module" src="js/app.js?v=adfa0743"></script>
+<script type="module" src="js/app.js?v=7071d1c4"></script>
 </body>
 </html>

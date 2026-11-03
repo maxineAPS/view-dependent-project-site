@@ -2,8 +2,8 @@
 // optimizer). Optional "post-optimization projection": each desired image is projected along its camera
 // direction onto the faces that camera can see (traced through the heightfield per pixel), later cameras
 // overwriting earlier ones, as in create_mesh.py's projection step.
-import * as THREE from '../vendor/three.module.min.js?v=adfa0743';
-import { OrbitControls } from '../vendor/OrbitControls.js?v=adfa0743';
+import * as THREE from '../vendor/three.module.min.js?v=7071d1c4';
+import { OrbitControls } from '../vendor/OrbitControls.js?v=7071d1c4';
 
 const VERT = /* glsl */ `
 in vec3 barColor;
@@ -143,7 +143,8 @@ export class HeightfieldViewer {
     this.view = -1;
     this.cams = [];
     this.layout();
-    new ResizeObserver(() => this.resize()).observe(container);
+    let rq = false; // resize on the next frame, not inside the observer callback (see onWidth in widgets.js)
+    new ResizeObserver(() => { if (!rq) { rq = true; requestAnimationFrame(() => { rq = false; this.resize(); }); } }).observe(container);
     this.resize();
   }
 

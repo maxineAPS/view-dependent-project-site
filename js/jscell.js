@@ -1,6 +1,6 @@
 // Editable JavaScript cells, shown next to the repository's Python (read-only). The cells call the
 // JavaScript port (vd-core.js) that the optimizer on this page uses; the Python itself is not run here.
-import { paint } from './targets.js?v=adfa0743';
+import { paint } from './targets.js?v=7071d1c4';
 
 // print() formatting: numbers as written, arrays (also typed and nested) as [a, b, c]
 export function fmt(v) {
@@ -26,13 +26,20 @@ export class JsCell {
     this.original = this.code.value;
     root.querySelector('[data-r=run]').addEventListener('click', () => this.run());
     root.querySelector('[data-r=reset]').addEventListener('click', () => { this.code.value = this.original; autosize(this.code); this.run(); });
+    // Tab indents; Esc first lets Tab move on to the next control (keyboard users must be able to leave)
+    let release = false;
     this.code.addEventListener('keydown', (e) => {
       if ((e.metaKey || e.ctrlKey || e.shiftKey) && e.key === 'Enter') { e.preventDefault(); this.run(); }
-      if (e.key === 'Tab' && !e.shiftKey) { e.preventDefault(); this.code.setRangeText('  ', this.code.selectionStart, this.code.selectionEnd, 'end'); }
+      if (e.key === 'Escape') { release = true; return; }
+      if (e.key === 'Tab' && !e.shiftKey && !release) { e.preventDefault(); this.code.setRangeText('  ', this.code.selectionStart, this.code.selectionEnd, 'end'); }
+      if (!['Shift', 'Alt', 'Control', 'Meta'].includes(e.key)) release = false;
     });
+    this.code.addEventListener('blur', () => { release = false; });
     this.code.addEventListener('input', () => autosize(this.code));
     autosize(this.code);
-    new ResizeObserver(() => autosize(this.code)).observe(this.code);
+    // the height depends on the code font and on whether a horizontal scrollbar shows
+    document.fonts?.ready.then(() => autosize(this.code));
+    addEventListener('resize', () => autosize(this.code));
   }
   run() {
     const vars = this.scope(), names = Object.keys(vars), lines = [];

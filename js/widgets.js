@@ -1,12 +1,24 @@
 // Interactive figures: the 2D slice renderer (Sec. 3.3), heightfield slicing (Sec. 3.2), Heaviside
 // approximations (Sec. 4.1) and a live loss chart. All values are computed with the same formulas as
 // rendering.py (via vd-core.js where possible).
-import * as core from './vd-core.js?v=adfa0743';
+import * as core from './vd-core.js?v=7071d1c4';
 
 const f32 = Math.fround;
 const css = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
 const rgbCss = (c) => `rgb(${c.map((v) => Math.round(Math.max(0, Math.min(1, v)) * 255)).join(',')})`;
 const fmt = (v, d = 2) => (Number.isFinite(v) ? v.toFixed(d) : '–');
+
+// Redraw when an element's width changes. Deferred to the next frame: the redraw changes the figure's own
+// height, and doing that inside the observer callback makes WebKit report a ResizeObserver loop.
+function onWidth(el, fn) {
+  let w = -1, queued = false;
+  new ResizeObserver((ents) => {
+    const nw = ents[ents.length - 1].contentRect.width;
+    if (nw === w) return;
+    w = nw;
+    if (!queued) { queued = true; requestAnimationFrame(() => { queued = false; fn(); }); }
+  }).observe(el);
+}
 
 function setupCanvas(cv, w, h) {
   const dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -151,7 +163,7 @@ export class SliceFigure {
     this.ui.targets.innerHTML = PALETTE.map((c, i) => `<button class="swatch-btn" data-i="${i}" style="background:${rgbCss(c)}" aria-label="target colour ${i}"></button>`).join('');
     this.ui.targets.addEventListener('click', (e) => { const b = e.target.closest('[data-i]'); if (!b) return; this.target = +b.dataset.i; this.draw(); });
     this.bindPointer();
-    new ResizeObserver(() => this.draw()).observe(root.querySelector('.fig-canvas-wrap'));
+    onWidth(root.querySelector('.fig-canvas-wrap'), () => this.draw());
   }
   state() {
     const order = this.flip ? [...this.heights.keys()].reverse() : [...this.heights.keys()];
@@ -264,7 +276,7 @@ export class SlicingFigure {
     this.ui = { elev: root.querySelector('[data-r=elev]'), elevOut: root.querySelector('[data-r=elev-out]'), info: root.querySelector('[data-r=info]'), swatch: root.querySelector('[data-r=swatch]') };
     this.ui.elev.addEventListener('input', () => { this.elev = +this.ui.elev.value; this.draw(); });
     this.bind();
-    new ResizeObserver(() => this.draw()).observe(root);
+    onWidth(root, () => this.draw());
   }
   cam() { return core.camFromAzEl(this.az, this.elev).map((v, i) => v + [0.0013, 0.0021, 0][i]); }
   compute() {
@@ -366,7 +378,7 @@ export class HeavisidePlot {
     this.ui.k.addEventListener('input', () => { this.k = Math.pow(10, +this.ui.k.value); this.draw(); });
     this.ui.range.addEventListener('change', () => { this.range = +this.ui.range.value; this.draw(); });
     this.ui.fns.addEventListener('click', (e) => { const b = e.target.closest('[data-f]'); if (!b) return; this.sel = b.dataset.f; this.draw(); });
-    new ResizeObserver(() => this.draw()).observe(root);
+    onWidth(root, () => this.draw());
   }
   draw() {
     const w = this.cv.parentElement.clientWidth, h = Math.max(220, Math.min(300, w * 0.5));
@@ -409,7 +421,7 @@ export class HeavisidePlot {
 // Live loss chart
 // ---------------------------------------------------------------------------------------------
 export class LossChart {
-  constructor(cv, { height = 150 } = {}) { this.cv = cv; this.h = height; this.reset(); new ResizeObserver(() => this.draw()).observe(cv.parentElement); }
+  constructor(cv, { height = 150 } = {}) { this.cv = cv; this.h = height; this.reset(); onWidth(cv.parentElement, () => this.draw()); }
   reset(maxStep = 295) { this.pts = []; this.events = []; this.maxStep = maxStep; this.draw(); }
   add(hist, events) { for (const p of hist) this.pts.push(p); for (const e of events || []) this.events.push(e); this.draw(); }
   draw() {

@@ -1,12 +1,12 @@
 // The live optimizer panel (used by the walkthrough page and the standalone UI page).
-import * as core from './vd-core.js?v=adfa0743';
-import { HeightfieldViewer, CAM_COLORS } from './viewer3d.js?v=adfa0743';
-import { LossChart } from './widgets.js?v=adfa0743';
-import { PRESETS, makeTarget, fromFile, paint, solid, noiseImage, stripesBW, orient, display } from './targets.js?v=adfa0743';
+import * as core from './vd-core.js?v=7071d1c4';
+import { HeightfieldViewer, CAM_COLORS } from './viewer3d.js?v=7071d1c4';
+import { LossChart } from './widgets.js?v=7071d1c4';
+import { PRESETS, makeTarget, fromFile, paint, solid, noiseImage, stripesBW, orient, display } from './targets.js?v=7071d1c4';
 
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
-const workerUrl = new URL('./worker.js?v=adfa0743', import.meta.url);
+const workerUrl = new URL('./worker.js?v=7071d1c4', import.meta.url);
 
 // ---------------------------------------------------------------------------------------------
 // Live optimizer panel (hero demo + playground)
@@ -153,7 +153,7 @@ export class OptimizerPanel {
       minAng = Math.min(minAng, (Math.acos(d) * 180) / Math.PI);
     }
     w.hidden = minAng >= 40;
-    w.textContent = `Two views are only ${minAng.toFixed(0)}° apart. Nearby views compete for the same bars, so expect a higher loss (the paper recommends at least 60° between views).`;
+    w.textContent = `Two views are only ${minAng.toFixed(0)}° apart. Nearby views compete for the same bars, so expect a higher loss (in the paper, two views work well when they differ by more than about 40° in elevation or 60° in azimuth).`;
   }
 
   setRunning(on) {
