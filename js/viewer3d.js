@@ -2,8 +2,8 @@
 // optimizer). Optional "post-optimization projection": each desired image is projected along its camera
 // direction onto the faces that camera can see (traced through the heightfield per pixel), later cameras
 // overwriting earlier ones, as in create_mesh.py's projection step.
-import * as THREE from '../vendor/three.module.min.js?v=7071d1c4';
-import { OrbitControls } from '../vendor/OrbitControls.js?v=7071d1c4';
+import * as THREE from '../vendor/three.module.min.js?v=e24ea5f4';
+import { OrbitControls } from '../vendor/OrbitControls.js?v=e24ea5f4';
 
 const VERT = /* glsl */ `
 in vec3 barColor;

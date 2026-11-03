@@ -22,7 +22,6 @@ Simulated annealing loop to iteratively optimize heights and colors of heightfie
 :start_temp: starting temperature for simulated annealing
 :param num_repeats: number of iterations
 :num_steps: number of iterations
-:min_height, max_height: range the perturbed heights are clamped to
 :return: resulting heightfield heights and colors tensors
 '''
 def sim_annealing(H, COL, ray_packs, num_cams, num_repeats, heaviside_fn, heaviside_k, desired_cols, start_temp = 3, num_steps = 50, min_height = 0.1, max_height = 3.9):

@@ -1,6 +1,6 @@
 // Editable JavaScript cells, shown next to the repository's Python (read-only). The cells call the
 // JavaScript port (vd-core.js) that the optimizer on this page uses; the Python itself is not run here.
-import { paint } from './targets.js?v=7071d1c4';
+import { paint } from './targets.js?v=e24ea5f4';
 
 // print() formatting: numbers as written, arrays (also typed and nested) as [a, b, c]
 export function fmt(v) {

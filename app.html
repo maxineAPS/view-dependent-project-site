@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Noto+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/site.css?v=7071d1c4">
+<link rel="stylesheet" href="css/site.css?v=e24ea5f4">
 </head>
 <body class="app-page">
 
@@ -21,7 +21,7 @@
   <nav class="app-links">
     <a href="index.html">Walkthrough</a>
     <a href="https://arxiv.org/pdf/2306.07449.pdf" target="_blank" rel="noopener">Paper</a>
-    <a href="https://github.com/maxineAPS/view-dependent" target="_blank" rel="noopener">Code</a>
+    <!-- hidden until the code repository is public: <a href="https://github.com/maxineAPS/view-dependent" target="_blank" rel="noopener">Code</a> -->
   </nav>
 </header>
 
@@ -31,8 +31,8 @@
     <div>
       <p class="kicker">Design tool</p>
       <h2>Design your own view-dependent surface</h2>
-      <p class="muted">Choose up to four viewing directions and a picture for each, then run the full optimizer: annealing, coarse to fine, alternating updates and regularization. Every switch below is an argument of <code>grad_descent()</code>. Download the result as a printable mesh with the images projected onto it, exactly as the repository’s <code>reproject.py</code> writes it.</p>
-      <p class="muted small">The code places every picture on the surface in one fixed orientation, so a picture is only upright from one side. Here each picture is first rotated to face its own camera; the optimizer itself is unchanged.</p>
+      <p class="muted">Choose up to four viewing directions and an image for each, then run the optimizer from the paper: simulated annealing, coarse-to-fine subdivision, alternating colour and height updates, and regularization. The settings below are the arguments of <code>grad_descent()</code>. The result can be downloaded as a printable textured mesh, in the same format as <code>reproject.py</code> writes.</p>
+      <p class="muted small">Each image is rotated to face its own camera before optimizing, so it appears upright from that view. (The Python code uses the same orientation for every image.)</p>
     </div>
     <label class="scenario">Start from <select data-r="preset">
       <option value="sunmoon" selected>Sun / Moon (2 views)</option>
@@ -81,6 +81,7 @@
           <label>optimizer <select data-opt="optim"><option>Adam</option><option>SGD</option></select></label>
           <label>seed <input type="number" placeholder="random" data-opt="seed"></label>
         </div>
+        <p class="muted small opt-note">Runs longer than 300 steps stay at 32×32 bars and 64×64 rays per view (the Python code keeps subdividing every 100 steps).</p>
       </details>
     </div>
   </div>
@@ -90,19 +91,19 @@
   <h2>How to use it</h2>
   <ol>
     <li><b>Views.</b> Each card is one viewing direction (azimuth and elevation, in degrees) and the picture seen from it. Click a picture to upload your own (PNG or JPEG), or pick a built-in target. Two to four views work; views closer than about 40° apart compete for the same bar faces.</li>
-    <li><b>Step 1: Optimize.</b> Runs <code>grad_descent()</code> live: annealing, coarse to fine subdivision, alternating colour and height updates. Watch the bars grow and shrink; the chart shows the loss of each view.</li>
+    <li><b>Step 1: Optimize.</b> Runs <code>grad_descent()</code> live: annealing, coarse to fine subdivision, alternating colour and height updates. The chart shows the loss of each view.</li>
     <li><b>Step 2: Project &amp; make printable.</b> Projects each picture onto the vertical segments of the bars its camera sees (as in the paper), blends overlapping views, slices the surface thin and builds a closed textured mesh.</li>
-    <li><b>Look from view</b> on a card shows the surface exactly along that camera. <b>Download</b> gives the mesh (OBJ, MTL and texture) plus the heights, colours and cameras as files the repository’s <code>reproject.py</code> reads.</li>
+    <li><b>Look from view</b> on a card shows the surface along that camera direction. <b>Download</b> gives the mesh (OBJ, MTL and texture) plus the heights, colours and cameras as files the repository’s <code>reproject.py</code> reads.</li>
   </ol>
-  <p class="muted small">Everything runs in your browser: the code release (Python and PyTorch) was ported to JavaScript for this page. Nothing is precomputed or uploaded. The method is described in the <a href="index.html">walkthrough</a>.</p>
+  <p class="muted small">Everything runs in your browser and images are not uploaded. We ported the code release from Python and PyTorch to JavaScript for this page. The method is explained in the <a href="index.html">walkthrough</a>.</p>
 </section>
 </main>
 
 <footer class="footer">
-  <p>Constructing Printable Surfaces with View-Dependent Appearance · SIGGRAPH 2023 · <a href="index.html">walkthrough</a> · <a href="https://github.com/maxineAPS/view-dependent" target="_blank" rel="noopener">code</a></p>
-  <p class="small">The code has been updated since the paper (v2.0); the original release is available as v1.0.</p>
+  <p>Constructing Printable Surfaces with View-Dependent Appearance · SIGGRAPH 2023 · <a href="index.html">walkthrough</a><!-- hidden until the code repository is public:  · <a href="https://github.com/maxineAPS/view-dependent" target="_blank" rel="noopener">code</a> --></p>
+  <!-- hidden until the code repository is public: <p class="small">The code has been updated since the paper (v2.0); the original release is available as v1.0.</p> -->
 </footer>
 
-<script type="module" src="js/ui.js?v=7071d1c4"></script>
+<script type="module" src="js/ui.js?v=e24ea5f4"></script>
 </body>
 </html>

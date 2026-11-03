@@ -1,12 +1,12 @@
 // The live optimizer panel (used by the walkthrough page and the standalone UI page).
-import * as core from './vd-core.js?v=7071d1c4';
-import { HeightfieldViewer, CAM_COLORS } from './viewer3d.js?v=7071d1c4';
-import { LossChart } from './widgets.js?v=7071d1c4';
-import { PRESETS, makeTarget, fromFile, paint, solid, noiseImage, stripesBW, orient, display } from './targets.js?v=7071d1c4';
+import * as core from './vd-core.js?v=e24ea5f4';
+import { HeightfieldViewer, CAM_COLORS } from './viewer3d.js?v=e24ea5f4';
+import { LossChart } from './widgets.js?v=e24ea5f4';
+import { PRESETS, makeTarget, fromFile, paint, solid, noiseImage, stripesBW, orient, display } from './targets.js?v=e24ea5f4';
 
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
-const workerUrl = new URL('./worker.js?v=7071d1c4', import.meta.url);
+const workerUrl = new URL('./worker.js?v=e24ea5f4', import.meta.url);
 
 // ---------------------------------------------------------------------------------------------
 // Live optimizer panel (hero demo + playground)
@@ -47,7 +47,10 @@ export class OptimizerPanel {
   options() {
     const o = {};
     const get = (k) => $(`[data-opt=${k}]`, this.root);
-    if (!this.editable) return { seed: Math.floor(Math.random() * 1e9), ...V2 };
+    // the code splits the bars every 100 steps; past 32x32 bars (the release's final resolution, reached at step
+    // 200) that would freeze the browser, so longer runs keep refining at that resolution
+    o.maxStrips = 32;
+    if (!this.editable) return { seed: Math.floor(Math.random() * 1e9), maxStrips: 32, ...V2 };
     o.epochs = Math.max(2, Math.min(600, +get('epochs').value || 295));
     o.simAnnealing = get('anneal').checked;
     o.barrier = get('barrier').checked;
@@ -153,7 +156,7 @@ export class OptimizerPanel {
       minAng = Math.min(minAng, (Math.acos(d) * 180) / Math.PI);
     }
     w.hidden = minAng >= 40;
-    w.textContent = `Two views are only ${minAng.toFixed(0)}° apart. Nearby views compete for the same bars, so expect a higher loss (in the paper, two views work well when they differ by more than about 40° in elevation or 60° in azimuth).`;
+    w.textContent = `Two views are only ${minAng.toFixed(0)}° apart. Views that are close together compete for the same bars, so expect a higher loss. In the paper, two views work well when they differ by more than about 40° in elevation or 60° in azimuth.`;
   }
 
   setRunning(on) {
@@ -188,7 +191,7 @@ export class OptimizerPanel {
     if (this.worker && this.running) this.worker.postMessage({ type: 'stop' });
     this.setRunning(false);
     if (!silent && was) {
-      this.setStatus(this.last ? `Stopped at step ${this.last.step} · loss per view <b>${this.last.perView.toFixed(3)}</b> · you can still project this result (step 2)` : 'Stopped.');
+      this.setStatus(this.last ? `Stopped at step ${this.last.step} · loss per view <b>${this.last.perView.toFixed(3)}</b> · this result can still be projected (step 2)` : 'Stopped.');
       if (this.last) this.setSteps({ step2: true, download: false, project: false });
     }
   }
@@ -219,7 +222,7 @@ export class OptimizerPanel {
     const secs = (m.ms / 1000).toFixed(1);
     if (m.type === 'done') {
       this.setRunning(false);
-      this.setStatus(`<b>Done</b> · ${m.step} steps in ${secs} s, in your browser · ${m.S}×${m.S} bars, ${m.numRays}×${m.numRays} rays per view · loss per view <b>${m.perView.toFixed(3)}</b>`);
+      this.setStatus(`<b>Done</b> · ${m.step} steps in ${secs} s · ${m.S}×${m.S} bars, ${m.numRays}×${m.numRays} rays per view · loss per view <b>${m.perView.toFixed(3)}</b>`);
       this.setSteps({ step2: true, download: false, project: false });
       if (this.onDone) this.onDone(m);
     } else {

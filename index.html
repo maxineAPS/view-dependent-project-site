@@ -12,17 +12,16 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Noto+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/site.css?v=7071d1c4">
+<link rel="stylesheet" href="css/site.css?v=e24ea5f4">
 </head>
 <body>
 
 <nav class="toc" aria-label="Sections">
-  <a href="#top">Overview</a>
+  <a href="#playground">Design tool</a>
+  <a href="#abstract">Overview</a>
   <a href="#rendering">Rendering</a>
   <a href="#objective">Objective</a>
   <a href="#optimization">Optimization</a>
-  <a href="#playground">Try it</a>
-  <a href="app.html">Design tool ↗</a>
   <a href="#fabrication">Fabrication</a>
   <a href="#citation">Citation</a>
 </nav>
@@ -37,48 +36,81 @@
   <div class="links">
     <a class="btn" href="https://arxiv.org/pdf/2306.07449.pdf" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 2h9l5 5v15H6z M14 2v6h6" fill="none" stroke="currentColor" stroke-width="2"/></svg>Paper</a>
     <a class="btn" href="https://doi.org/10.1145/3588432.3591526" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8 12h8M12 8v8" stroke="currentColor" stroke-width="2"/></svg>ACM DL</a>
-    <a class="btn" href="https://github.com/maxineAPS/view-dependent" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 0 0-3.2 19.5c.5.1.7-.2.7-.5v-1.7c-2.8.6-3.4-1.3-3.4-1.3-.5-1.2-1.1-1.5-1.1-1.5-.9-.6.1-.6.1-.6 1 .1 1.5 1 1.5 1 .9 1.6 2.4 1.1 3 .9.1-.7.4-1.1.6-1.4-2.2-.3-4.6-1.1-4.6-5 0-1.1.4-2 1-2.7-.1-.3-.4-1.3.1-2.7 0 0 .8-.3 2.8 1a9.6 9.6 0 0 1 5 0c1.9-1.3 2.8-1 2.8-1 .5 1.4.2 2.4.1 2.7.6.7 1 1.6 1 2.7 0 3.9-2.4 4.7-4.6 5 .4.3.7.9.7 1.9v2.8c0 .3.2.6.7.5A10 10 0 0 0 12 2z" fill="currentColor"/></svg>Code</a>
+    <!-- hidden until the code repository is public: <a class="btn" href="https://github.com/maxineAPS/view-dependent" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 0 0-3.2 19.5c.5.1.7-.2.7-.5v-1.7c-2.8.6-3.4-1.3-3.4-1.3-.5-1.2-1.1-1.5-1.1-1.5-.9-.6.1-.6.1-.6 1 .1 1.5 1 1.5 1 .9 1.6 2.4 1.1 3 .9.1-.7.4-1.1.6-1.4-2.2-.3-4.6-1.1-4.6-5 0-1.1.4-2 1-2.7-.1-.3-.4-1.3.1-2.7 0 0 .8-.3 2.8 1a9.6 9.6 0 0 1 5 0c1.9-1.3 2.8-1 2.8-1 .5 1.4.2 2.4.1 2.7.6.7 1 1.6 1 2.7 0 3.9-2.4 4.7-4.6 5 .4.3.7.9.7 1.9v2.8c0 .3.2.6.7.5A10 10 0 0 0 12 2z" fill="currentColor"/></svg>Code</a> -->
     <a class="btn" href="https://www.youtube.com/watch?v=8NRQdXFF1Go" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18v12H3z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M10 9l5 3-5 3z" fill="currentColor"/></svg>Video</a>
     <a class="btn" href="app.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10h4v10zM10 20V4h4v16zM16 20v-7h4v7z" fill="currentColor"/></svg>Design tool</a>
     <a class="btn" href="#citation"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h4v4H8c0 2 1 3 3 3v2c-3 0-4-2-4-5zm7 0h4v4h-3c0 2 1 3 3 3v2c-3 0-4-2-4-5z" fill="currentColor"/></svg>BibTeX</a>
   </div>
-
-  <section class="panel demo" id="hero-demo" aria-label="Live optimization demo">
-    <div class="demo-head">
-      <div>
-        <h2 class="demo-title">One surface, three pictures, optimized live in your browser</h2>
-        <p class="muted small">Like Fig. 1 of the paper: three viewing directions, each with its own striped target. The surface starts flat and white; the optimizer from the paper sets the height and colour of every bar. Nothing on this page is precomputed: the code release (Python and PyTorch) was ported to JavaScript so that it runs in your browser.</p>
-      </div>
-    </div>
-    <div class="demo-grid">
-      <div class="viewer-wrap">
-        <div class="viewer" data-r="viewer"></div>
-        <div class="steps-bar">
-          <button class="btn step-btn" data-r="run"><span class="step-n">1</span> Optimize</button>
-          <button class="btn step-btn primary" data-r="step2" disabled><span class="step-n">2</span> Project &amp; make printable</button>
-        </div>
-        <div class="viewer-tools">
-          <label class="toggle"><input type="checkbox" data-r="project" disabled> Show projected result</label>
-          <label class="toggle"><input type="checkbox" data-r="shade" checked> Shading</label>
-          <label class="toggle"><input type="checkbox" data-r="arrows" checked> Camera arrows</label>
-        </div>
-        <p class="hint">Drag to orbit; pinch, or hold Ctrl (⌘) and scroll, to zoom. “Look from view” looks exactly along that camera, the way a person standing there sees the surface.</p>
-      </div>
-      <div class="side">
-        <div class="views compact" data-r="views"></div>
-        <div class="chart-wrap"><canvas data-r="chart"></canvas></div>
-        <p class="status" data-r="status" aria-live="polite">Waiting to start…</p>
-      </div>
-    </div>
-  </section>
 </header>
 
 <main>
 
+<section class="panel playground" id="playground" aria-label="Design your own surface">
+  <div class="pg-head">
+    <div>
+      <p class="kicker">Design tool</p>
+      <h2>Design your own view-dependent surface</h2>
+      <p class="muted">Choose up to four viewing directions and an image for each, then run the optimizer from the paper: simulated annealing, coarse-to-fine subdivision, alternating colour and height updates, and regularization. The settings below are the arguments of <code>grad_descent()</code>. The result can be downloaded as a printable textured mesh, in the same format as <code>reproject.py</code> writes.</p>
+      <p class="muted small">The optimizer runs in your browser: we ported the code release from Python and PyTorch to JavaScript for this page. A full-page version is available as a <a href="app.html">standalone tool</a>.</p>
+      <p class="muted small">Each image is rotated to face its own camera before optimizing, so it appears upright from that view. (The Python code uses the same orientation for every image.)</p>
+    </div>
+    <label class="scenario">Start from <select data-r="preset">
+      <option value="sunmoon" selected>Sun / Moon (2 views)</option>
+      <option value="fig1">Fig. 1: three striped views</option>
+      <option value="fig10">Printed result: four patterns</option>
+      <option value="cmyk">Four solid colours (initial-configuration study)</option>
+      <option value="ab">Letters A / B</option>
+      <option value="heartstar">Heart / Star</option>
+    </select></label>
+  </div>
+  <div class="pg-grid">
+    <div class="pg-views">
+      <div class="views" data-r="views"></div>
+      <button class="ghost-btn add" data-r="add-view">＋ Add a view</button>
+      <p class="warn" data-r="angle-warn" hidden></p>
+    </div>
+    <div class="pg-main">
+      <div class="viewer-wrap">
+        <div class="viewer tall" data-r="viewer"></div>
+        <div class="viewer-tools">
+          <label class="toggle"><input type="checkbox" data-r="project" disabled> Show projected result</label>
+          <label class="toggle"><input type="checkbox" data-r="shade" checked> Shading</label>
+          <label class="toggle"><input type="checkbox" data-r="arrows" checked> Camera arrows</label>
+          <label class="toggle speed">Speed <select data-r="speed" aria-label="optimization speed"><option value="80">slow</option><option value="30" selected>watch</option><option value="0">fast</option></select></label>
+        </div>
+      </div>
+      <div class="steps-bar">
+        <button class="btn step-btn" data-r="run"><span class="step-n">1</span> Optimize</button>
+        <button class="btn step-btn primary" data-r="step2" disabled><span class="step-n">2</span> Project &amp; make printable</button>
+        <button class="btn" data-r="stop" disabled>■ Stop</button>
+        <button class="btn" data-r="download" disabled>⤓ Download printable mesh</button>
+      </div>
+      <p class="status" data-r="status" aria-live="polite">Pick views and pictures, then press Optimize.</p>
+      <div class="chart-wrap"><canvas data-r="chart"></canvas></div>
+      <p class="muted small chart-legend"><span class="lg loss"></span>loss per view <span class="lg shade"></span>height steps <span class="lg sub"></span>bars split <span class="lg rays"></span>rays doubled</p>
+      <details class="opts" open>
+        <summary>Optimizer settings (<code>grad_descent</code> arguments)</summary>
+        <div class="opt-grid">
+          <label>num_epochs <input type="number" min="2" max="600" value="600" data-opt="epochs"></label>
+          <label><input type="checkbox" data-opt="v10"> original release settings (v1.0)</label>
+          <label><input type="checkbox" checked data-opt="anneal"> simulated annealing</label>
+          <label><input type="checkbox" checked data-opt="barrier"> barrier loss</label>
+          <label><input type="checkbox" checked data-opt="neighbor"> neighbour loss</label>
+          <label>smooth step <select data-opt="heaviside"><option value="tan" selected>tanh</option><option value="erfc">erfc</option><option value="circ">circle</option><option value="log">log</option><option value="circdist">circle distance</option></select></label>
+          <label>k <input type="number" step="0.01" min="0.01" value="0.1" data-opt="k"></label>
+          <label>optimizer <select data-opt="optim"><option>Adam</option><option>SGD</option></select></label>
+          <label>seed <input type="number" placeholder="random" data-opt="seed"></label>
+        </div>
+        <p class="muted small opt-note">Runs longer than 300 steps stay at 32×32 bars and 64×64 rays per view (the Python code keeps subdividing every 100 steps).</p>
+      </details>
+    </div>
+  </div>
+</section>
+
 <section class="prose" id="abstract">
   <h2>In short</h2>
   <p>We make 3D-printed surfaces that show a <b>different picture depending on where you look from</b>. The surface is a grid of coloured bars of different heights. From any direction, taller bars hide parts of the bars behind them, so each viewer sees a different mix of colours.</p>
-  <p>Designing such a surface by hand is hopeless, so we optimize it. The heart of the method is a <b>simple differentiable renderer made for coloured heightfields</b>. It turns each camera ray into a one-dimensional problem with a closed-form colour, so the gradient of the image with respect to every height and colour is cheap to compute. A coarse-to-fine optimizer then adjusts heights and colours until each view matches its desired image. The result is printed directly on a full-colour UV (PolyJet) printer, with no lenses, coatings or extra fabrication steps.</p>
+  <p>Designing such a surface by hand is impractical, so we optimize it with a <b>differentiable renderer for coloured heightfields</b>. It turns each camera ray into a one-dimensional problem with a closed-form colour, so the gradient of the image with respect to every height and colour is cheap to compute. A coarse-to-fine optimizer then adjusts heights and colours until each view matches its desired image. The result is printed directly on a full-colour UV (PolyJet) printer, with no lenses, coatings or extra fabrication steps.</p>
   <div class="steps">
     <a class="step" href="#rendering"><span class="n">1</span><b>Render</b><span>Slice the heightfield along each camera ray and read off the colour in closed form.</span></a>
     <a class="step" href="#objective"><span class="n">2</span><b>Differentiate</b><span>Use a smooth step in the backward pass so heights get gradients.</span></a>
@@ -132,7 +164,7 @@ print("widths:", np.round(widths, 3))
 print("o_y:", round(float(ray.origin.y), 3))</pre>
     </div>
     <div class="pyjs-col jscell">
-      <div class="pyjs-head"><span class="js-badge">JavaScript</span> The same steps in the JavaScript port that runs this page. Edit and run it; it reruns when you move the figure.</div>
+      <div class="pyjs-head"><span class="js-badge">JavaScript</span> The same steps in the JavaScript port used on this page. You can edit and run it; it also reruns when the figure changes.</div>
       <textarea class="jscode" spellcheck="false" aria-label="JavaScript code, editable. Tab indents; press Escape, then Tab, to leave.">// traced back from z = 1, as in grad_descent.py
 const origin = pixel.map((p, i) =&gt; p - 20 * cam[i]);
 const ray = core.rayInfo(origin, cam, 8);
@@ -171,7 +203,7 @@ print("o_y:", round(ray.oy, 3));</textarea>
     </div>
     <p class="fig-info"><span class="swatch big" data-r="swatch"></span> <span data-r="formula"></span></p>
     <div class="table-scroll"><table class="eq-table" data-r="table"></table></div>
-    <p class="muted small">The two strips on the right are the one-dimensional images of this slice: what all the parallel rays see from this side and from the opposite side. The same bars show different colours from each side, which is the whole effect. With “Show gradients”, the purple arrows show how each height should move to bring the pixel closer to the target colour you pick, using the smooth step’s derivative described below.</p>
+    <p class="muted small">The two strips on the right are the one-dimensional images of this slice: what all the parallel rays see from this side and from the opposite side. The same bars show different colours from the two sides. With “Show gradients”, the purple arrows show how each height should move to bring the pixel closer to the target colour you pick, using the smooth step’s derivative described below.</p>
   </div>
 
   <details class="code-details">
@@ -222,7 +254,7 @@ packs = [rendering.process_rays(origins, cam, 8)]
 image = rendering.render_camera(H, COL, packs, 1, num_repeats=1, heaviside_fn="tan")[0]</pre>
     </div>
     <div class="pyjs-col jscell">
-      <div class="pyjs-head"><span class="js-badge">JavaScript</span> The same image in the JavaScript port, the renderer the optimizer on this page uses.</div>
+      <div class="pyjs-head"><span class="js-badge">JavaScript</span> The same image, rendered by the JavaScript port.</div>
       <textarea class="jscode" spellcheck="false" aria-label="JavaScript code, editable. Tab indents; press Escape, then Tab, to leave.">const n = 16;
 const rays = core.processRays(cam, n, 8);  // slicing, once per resolution
 const image = core.renderCamera(Float32Array.from(H.flat()), 8, 1, Float32Array.from(COL.flat(2)), rays);
@@ -315,7 +347,7 @@ for (const [name, fn] of [["tanh", core.HEAVISIDE.tan], ["erfc", core.HEAVISIDE.
     </div>
     <div class="pyjs narrow" data-cell="reg">
       <div class="pyjs-col">
-        <div class="pyjs-head"><span class="py-badge">Python</span> <code>opt.py</code> on the heights from the slicing figure (which go above 1.0, so the v1.0 height range).</div>
+        <div class="pyjs-head"><span class="py-badge">Python</span> <code>opt.py</code> on the heights from the slicing figure, with the v1.0 height range (some heights are above 1.0).</div>
         <pre class="code pysnip" aria-label="Python code from the repository (read-only)">print("barrier  :", round(float(opt.barrier_fn(H, min_val=0.1, max_val=1.5)), 4))
 print("neighbour:", round(float(opt.neighbor_fn(H)), 4), "  v2.0:", round(float(opt.neighbor_fn_wrap(H)), 4))
 spiky = H.clone()
@@ -346,14 +378,14 @@ print("with a spike:", round(core.barrier(spiky, 8, 0.1, 1.5), 4), round(core.ne
     <li><b>Alternating block coordinate descent.</b> Heights and colours are updated in alternating blocks of steps instead of together. This is much better than updating both at every step.</li>
     <li><b>Simulated annealing.</b> Random perturbations of all heights and colours at the start help escape poor local optima. This step is optional; leave it out if you want a more uniform pattern.</li>
   </ul>
-  <p>After optimization, the desired images are projected back onto the surface from their cameras, which gives higher-resolution detail at no extra optimization cost. In the code release, every point of the surface is coloured from the cameras that see it, weighted by how directly each camera sees it. Press “2 · Project &amp; make printable” in any 3D view on this page to see it: the surface is also sliced thin (every bar is lowered by the same amount, which does not change what any camera sees), and the download contains this printable mesh.</p>
+  <p>After optimization, the desired images are projected back onto the surface from their cameras, which gives higher-resolution detail at no extra optimization cost. In the code release, every point of the surface is coloured from the cameras that see it, weighted by how directly each camera sees it. Press “2 · Project &amp; make printable” in the design tool to see it: the surface is also sliced thin (every bar is lowered by the same amount, which does not change what any camera sees), and the download contains this printable mesh.</p>
 
   <div class="table-scroll">
     <table class="data settings">
-      <caption>Settings of the code release (v2.0, used everywhere on this page)</caption>
+      <caption>Settings of the code release (v2.0), also used on this page</caption>
       <tr><th>step</th><th>setting</th><th>where</th></tr>
       <tr><td>initial surface</td><td>uniform heights 0.5, white colours; height unit 4×4 tiled 2×2 (8×8 bars)</td><td><code>optimize_surface.py</code></td></tr>
-      <tr><td>length</td><td><code>num_epochs</code> = 295, i.e. 294 gradient steps</td><td><code>optimize_surface.py</code></td></tr>
+      <tr><td>length</td><td><code>num_epochs</code> = 295, i.e. 294 gradient steps (the design tool runs 600 by default)</td><td><code>optimize_surface.py</code></td></tr>
       <tr><td>simulated annealing</td><td>50 steps before gradient descent, T = 3 cooled ×0.99 per step, perturbations up to ±0.025</td><td><code>simannealing.py</code></td></tr>
       <tr><td>coarse to fine</td><td>bars split 2×2 at steps 100 and 200 (8×8 → 16×16 → 32×32); rays per view doubled 5 steps earlier (16² → 32² → 64²)</td><td><code>grad_descent.py</code></td></tr>
       <tr><td>block coordinate descent</td><td>repeating 50-step pattern: 10 colour steps, 10 height steps, 20 colour steps, 10 height steps</td><td><code>grad_descent.py</code></td></tr>
@@ -371,7 +403,7 @@ print("with a spike:", round(core.barrier(spiky, 8, 0.1, 1.5), 4), round(core.ne
     <div class="code-file"></div>
     <pre class="code" data-src="grad_descent.py" data-from="if j%100 == 0:" data-to="change = True"></pre>
     <div class="code-file"></div>
-    <pre class="code" data-src="grad_descent.py" data-from="#keep the camera rays starting at the current mean surface height" data-to="                change = True"></pre>
+    <pre class="code" data-src="grad_descent.py" data-from="#camera rays start at the current mean surface height" data-to="if j%100 == 95 or j%100 == 0 or recenter:"></pre>
   </details>
   <details class="code-details">
     <summary>The code: the projection in <code>reproject.py</code></summary>
@@ -399,67 +431,6 @@ print("with a spike:", round(core.barrier(spiky, 8, 0.1, 1.5), 4), round(core.ne
   <div class="two">
     <figure class="paper-fig"><img src="img/inits.webp" alt="Renders of five initial surface configurations" loading="lazy" width="1306" height="522"><figcaption>Initial configurations studied in the paper.</figcaption></figure>
     <figure class="paper-fig"><img src="img/initconfigs.webp" alt="Convergence curves for different initial configurations" loading="lazy" width="1000" height="663"><figcaption>Convergence for each initial configuration (four views, from the paper).</figcaption></figure>
-  </div>
-</section>
-
-<section class="panel playground" id="playground" aria-label="Design your own surface">
-  <div class="pg-head">
-    <div>
-      <p class="kicker">Try it</p>
-      <h2>Design your own view-dependent surface</h2>
-      <p class="muted">Choose up to four viewing directions and a picture for each, then run the full optimizer: annealing, coarse to fine, alternating updates and regularization. Every switch below is an argument of <code>grad_descent()</code>. Download the result as a printable mesh with the images projected onto it, exactly as the repository’s <code>reproject.py</code> writes it.</p>
-      <p class="muted small">Prefer a bigger canvas? Open the <a href="app.html">standalone design tool</a>.</p>
-      <p class="muted small">The code places every picture on the surface in one fixed orientation, so a picture is only upright from one side. Here each picture is first rotated to face its own camera; the optimizer itself is unchanged.</p>
-    </div>
-    <label class="scenario">Start from <select data-r="preset">
-      <option value="sunmoon" selected>Sun / Moon (2 views)</option>
-      <option value="fig1">Fig. 1: three striped views</option>
-      <option value="fig10">Printed result: four patterns</option>
-      <option value="cmyk">Four solid colours (initial-configuration study)</option>
-      <option value="ab">Letters A / B</option>
-      <option value="heartstar">Heart / Star</option>
-    </select></label>
-  </div>
-  <div class="pg-grid">
-    <div class="pg-views">
-      <div class="views" data-r="views"></div>
-      <button class="ghost-btn add" data-r="add-view">＋ Add a view</button>
-      <p class="warn" data-r="angle-warn" hidden></p>
-    </div>
-    <div class="pg-main">
-      <div class="viewer-wrap">
-        <div class="viewer tall" data-r="viewer"></div>
-        <div class="viewer-tools">
-          <label class="toggle"><input type="checkbox" data-r="project" disabled> Show projected result</label>
-          <label class="toggle"><input type="checkbox" data-r="shade" checked> Shading</label>
-          <label class="toggle"><input type="checkbox" data-r="arrows" checked> Camera arrows</label>
-          <label class="toggle speed">Speed <select data-r="speed" aria-label="optimization speed"><option value="80">slow</option><option value="30" selected>watch</option><option value="0">fast</option></select></label>
-        </div>
-      </div>
-      <div class="steps-bar">
-        <button class="btn step-btn" data-r="run"><span class="step-n">1</span> Optimize</button>
-        <button class="btn step-btn primary" data-r="step2" disabled><span class="step-n">2</span> Project &amp; make printable</button>
-        <button class="btn" data-r="stop" disabled>■ Stop</button>
-        <button class="btn" data-r="download" disabled>⤓ Download printable mesh</button>
-      </div>
-      <p class="status" data-r="status" aria-live="polite">Pick views and pictures, then press Optimize.</p>
-      <div class="chart-wrap"><canvas data-r="chart"></canvas></div>
-      <p class="muted small chart-legend"><span class="lg loss"></span>loss per view <span class="lg shade"></span>height steps <span class="lg sub"></span>bars split <span class="lg rays"></span>rays doubled</p>
-      <details class="opts" open>
-        <summary>Optimizer settings (<code>grad_descent</code> arguments)</summary>
-        <div class="opt-grid">
-          <label>num_epochs <input type="number" min="2" max="600" value="295" data-opt="epochs"></label>
-          <label><input type="checkbox" data-opt="v10"> original release settings (v1.0)</label>
-          <label><input type="checkbox" checked data-opt="anneal"> simulated annealing</label>
-          <label><input type="checkbox" checked data-opt="barrier"> barrier loss</label>
-          <label><input type="checkbox" checked data-opt="neighbor"> neighbour loss</label>
-          <label>smooth step <select data-opt="heaviside"><option value="tan" selected>tanh</option><option value="erfc">erfc</option><option value="circ">circle</option><option value="log">log</option><option value="circdist">circle distance</option></select></label>
-          <label>k <input type="number" step="0.01" min="0.01" value="0.1" data-opt="k"></label>
-          <label>optimizer <select data-opt="optim"><option>Adam</option><option>SGD</option></select></label>
-          <label>seed <input type="number" placeholder="random" data-opt="seed"></label>
-        </div>
-      </details>
-    </div>
   </div>
 </section>
 
@@ -495,10 +466,10 @@ print("with a spike:", round(core.barrier(spiky, 8, 0.1, 1.5), 4), round(core.ne
 </main>
 
 <footer class="footer">
-  <p>Constructing Printable Surfaces with View-Dependent Appearance · SIGGRAPH 2023 · <a href="https://github.com/maxineAPS/view-dependent" target="_blank" rel="noopener">code</a></p>
-  <p class="small">The code has been updated since the paper (v2.0); the original release is available as v1.0.</p>
+  <p>Constructing Printable Surfaces with View-Dependent Appearance · SIGGRAPH 2023<!-- hidden until the code repository is public:  · <a href="https://github.com/maxineAPS/view-dependent" target="_blank" rel="noopener">code</a> --></p>
+  <!-- hidden until the code repository is public: <p class="small">The code has been updated since the paper (v2.0); the original release is available as v1.0.</p> -->
 </footer>
 
-<script type="module" src="js/app.js?v=7071d1c4"></script>
+<script type="module" src="js/app.js?v=e24ea5f4"></script>
 </body>
 </html>

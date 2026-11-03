@@ -1,8 +1,8 @@
-import * as core from './vd-core.js?v=7071d1c4';
-import { SliceFigure, SlicingFigure, HeavisidePlot, renderSlice } from './widgets.js?v=7071d1c4';
-import { paint, solid, noiseImage, stripesBW } from './targets.js?v=7071d1c4';
-import { JsCell, round } from './jscell.js?v=7071d1c4';
-import { OptimizerPanel, SCENARIOS, workerUrl } from './panel.js?v=7071d1c4';
+import * as core from './vd-core.js?v=e24ea5f4';
+import { SliceFigure, SlicingFigure, HeavisidePlot, renderSlice } from './widgets.js?v=e24ea5f4';
+import { paint, solid, noiseImage, stripesBW } from './targets.js?v=e24ea5f4';
+import { JsCell, round } from './jscell.js?v=e24ea5f4';
+import { OptimizerPanel, SCENARIOS, workerUrl } from './panel.js?v=e24ea5f4';
 
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
@@ -11,7 +11,7 @@ const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 // Code walkthrough: functions extracted verbatim from the repository files
 // ---------------------------------------------------------------------------------------------
 const srcCache = {};
-async function source(file) { return (srcCache[file] ??= fetch(`py/${file}?v=7071d1c4`).then((r) => r.text())); }
+async function source(file) { return (srcCache[file] ??= fetch(`py/${file}?v=e24ea5f4`).then((r) => r.text())); }
 function extract(src, name) {
   const lines = src.split('\n');
   const i = lines.findIndex((l) => new RegExp(`^(\\s*)def ${name}\\(`).test(l));
@@ -139,10 +139,9 @@ function initNav() {
 function main() {
   initNav();
   fillCode();
-  const hero = new OptimizerPanel($('#hero-demo'), { views: SCENARIOS.fig1.views, pace: 25, autostart: true });
   const figs = initFigures();
   initCells(figs);
-  const pg = new OptimizerPanel($('#playground'), { views: SCENARIOS.sunmoon.views, editable: true });
-  window.__app = { hero, pg, figs, core };
+  const pg = new OptimizerPanel($('#playground'), { views: SCENARIOS.sunmoon.views, editable: true, autostart: true });
+  window.__app = { pg, figs, core };
 }
 main();
