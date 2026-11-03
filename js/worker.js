@@ -1,6 +1,6 @@
 // Runs the optimizer (vd-core.js, a port of grad_descent.py) off the main thread and streams progress.
-import * as core from './vd-core.js?v=bc456d57';
-import { exportSurface, heightsFull } from './reproject.js?v=bc456d57';
+import * as core from './vd-core.js?v=d5cce861';
+import { exportSurface, heightsFull } from './reproject.js?v=d5cce861';
 
 let current = 0; // id of the run that is allowed to continue
 let pace = 0;    // ms to wait after each step (can change during a run)

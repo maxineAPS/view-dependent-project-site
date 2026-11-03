@@ -12,11 +12,25 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Noto+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/site.css?v=bc456d57">
+<link rel="stylesheet" href="css/site.css?v=d5cce861">
 </head>
 <body>
-<div class="newbar" role="note">This live walkthrough is new. Please <a id="bug-link" href="mailto:max1@mit.edu?subject=Bug%20report%3A%20view-dependent%20surfaces%20walkthrough">report bugs or issues</a> to max1@mit.edu.</div>
-<script>document.getElementById('bug-link').href += '&body=' + encodeURIComponent('Page: ' + location.href + '\n\n');</script>
+<div class="newbar" role="note">This live walkthrough is new. Please <a id="bug-link" href="mailto:max1@mit.edu">report bugs or issues</a> to max1@mit.edu.
+  <div class="newbar-panel" id="bug-panel" hidden><span class="newbar-msg">Send a short note to <b>max1@mit.edu</b> saying what you did and what went wrong.</span>
+    <button type="button" class="chip-btn" id="bug-copy">Copy address</button> <a class="chip-btn" id="bug-gmail" target="_blank" rel="noopener">Open in Gmail</a> <a class="chip-btn" id="bug-mail">Open email app</a></div>
+</div>
+<script>
+(() => {
+  const to = 'max1@mit.edu', su = 'Bug report: view-dependent surfaces walkthrough', body = 'Page: ' + location.href + '\n\n', q = encodeURIComponent;
+  const $ = (id) => document.getElementById(id), panel = $('bug-panel');
+  $('bug-mail').href = 'mailto:' + to + '?subject=' + q(su) + '&body=' + q(body);
+  $('bug-gmail').href = 'https://mail.google.com/mail/?view=cm&fs=1&to=' + to + '&su=' + q(su) + '&body=' + q(body);
+  $('bug-link').addEventListener('click', (e) => { e.preventDefault(); panel.hidden = !panel.hidden; });
+  $('bug-copy').addEventListener('click', async (e) => {
+    try { await navigator.clipboard.writeText(to); e.target.textContent = 'Copied'; } catch { e.target.textContent = to; }
+  });
+})();
+</script>
 
 <nav class="toc" aria-label="Sections">
   <a href="#playground">Design tool</a>
@@ -472,6 +486,6 @@ print("with a spike:", round(core.barrier(spiky, 8, 0.1, 1.5), 4), round(core.ne
   <!-- hidden until the code repository is public: <p class="small">The code has been updated since the paper (v2.0); the original release is available as v1.0.</p> -->
 </footer>
 
-<script type="module" src="js/app.js?v=bc456d57"></script>
+<script type="module" src="js/app.js?v=d5cce861"></script>
 </body>
 </html>
