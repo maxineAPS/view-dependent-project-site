@@ -38,6 +38,7 @@ def grad_descent(num_epochs, H, cam_directions, image_paths, use_barrier_loss = 
     now = datetime.now()
     date_time = now.strftime("%m_%d_%Y_%H-%M-%S")
     os.makedirs(output_dir, exist_ok=True)
+    prefix = grad_descent.last_output = os.path.join(output_dir, date_time)
     num_cams = len(cam_directions)
     num_strips = H.shape[0]*num_repeats
     ray_width = 1/num_rays
@@ -197,7 +198,6 @@ def grad_descent(num_epochs, H, cam_directions, image_paths, use_barrier_loss = 
                 H[H <= 0.1] = 0.1 + 1e-4
 
         if j%50 == 49 or j == num_epochs-1: #every 50 steps and at the end
-            prefix = grad_descent.last_output = os.path.join(output_dir, date_time)
             repeated_H = H.detach().repeat(num_repeats, num_repeats)
             torch.save(repeated_H, prefix + '_heights.pt')
             torch.save(COL.detach(), prefix + '_colors.pt')

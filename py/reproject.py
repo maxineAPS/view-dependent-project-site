@@ -257,8 +257,8 @@ if __name__ == "__main__":
     for suffix in ("_heights.npy", "_colors.npy", "_cameras.json"):
         if not os.path.isfile(args.prefix + suffix):
             parser.error("%s not found (give the prefix written by optimize_surface.py, e.g. models/06_13_2023_18-48-48)" % (args.prefix + suffix))
-    if args.texels < 1:
-        parser.error("--texels must be at least 1")
+    if not 1 <= args.texels <= 32:
+        parser.error("--texels must be between 1 and 32")
     H = np.load(args.prefix + "_heights.npy")
     COL = np.load(args.prefix + "_colors.npy")
     meta = json.load(open(args.prefix + "_cameras.json"))
