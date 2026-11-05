@@ -2,111 +2,12 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="format-detection" content="telephone=no, email=no">
-<meta property="og:title" content="View-Dependent Surface Designer">
-<meta property="og:url" content="https://maxineaps.github.io/view-dependent-project-site/app.html">
-<meta property="og:type" content="website">
 <title>View-Dependent Surface Designer</title>
-<meta name="description" content="SIGGRAPH 2023. A differentiable renderer for coloured heightfields and an optimizer that designs 3D-printable surfaces whose appearance changes with viewing direction. Design tool: upload pictures, set viewing directions and optimize a printable surface live in the browser.">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='3' y='14' width='6' height='15' fill='%23e8590c'/%3E%3Crect x='10' y='6' width='6' height='23' fill='%231c7ed6'/%3E%3Crect x='17' y='18' width='6' height='11' fill='%232b8a3e'/%3E%3Crect x='24' y='10' width='6' height='19' fill='%23ae3ec9'/%3E%3C/svg%3E">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Noto+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/site.css?v=878180fb">
+<link rel="canonical" href="https://maxineaps.github.io/view-dependent/app/">
+<meta http-equiv="refresh" content="0; url=https://maxineaps.github.io/view-dependent/app/">
+<script>location.replace('https://maxineaps.github.io/view-dependent/app/' + location.hash);</script>
 </head>
-<body class="app-page">
-<div class="newbar" role="note">This live walkthrough is new. Please report bugs or issues to <b>max1@mit.edu</b>.</div>
-
-<header class="app-bar">
-  <a class="app-title" href="index.html">Constructing Printable Surfaces with View-Dependent Appearance</a>
-  <nav class="app-links">
-    <a href="index.html">Walkthrough</a>
-    <a href="https://arxiv.org/pdf/2306.07449.pdf" target="_blank" rel="noopener">Paper</a>
-    <a href="https://github.com/maxineAPS/view-dependent" target="_blank" rel="noopener">Code</a>
-  </nav>
-</header>
-
-<main class="app-main">
-<section class="panel playground" id="playground" aria-label="Design your own surface">
-  <div class="pg-head">
-    <div>
-      <p class="kicker">Design tool</p>
-      <h2>Design your own view-dependent surface</h2>
-      <p class="muted">Pick up to four viewing directions and an image for each. Press Optimize to run the optimizer from the paper, then download the result as a printable mesh. The settings below are the arguments of <code>grad_descent()</code>.</p>
-      <p class="muted small">Each image is turned to face its camera, so it looks upright from that view. The Python code does not do this.</p>
-    </div>
-    <label class="scenario">Start from <select data-r="preset">
-      <option value="sunmoon" selected>Sun / Moon (2 views)</option>
-      <option value="fig1">Fig. 1: three striped views</option>
-      <option value="fig10">Printed result: four patterns</option>
-      <option value="cmyk">Four solid colours (initial-configuration study)</option>
-      <option value="ab">Letters A / B</option>
-      <option value="heartstar">Heart / Star</option>
-    </select></label>
-  </div>
-  <div class="pg-grid">
-    <div class="pg-views">
-      <div class="views" data-r="views"></div>
-      <button class="ghost-btn add" data-r="add-view">＋ Add a view</button>
-      <p class="warn" data-r="angle-warn" hidden></p>
-    </div>
-    <div class="pg-main">
-      <div class="viewer-wrap">
-        <div class="viewer tall" data-r="viewer"></div>
-        <div class="viewer-tools">
-          <label class="toggle"><input type="checkbox" data-r="project" disabled> Show projected result</label>
-          <label class="toggle"><input type="checkbox" data-r="shade" checked> Shading</label>
-          <label class="toggle"><input type="checkbox" data-r="arrows" checked> Camera arrows</label>
-          <label class="toggle speed">Speed <select data-r="speed" aria-label="optimization speed"><option value="80">slow</option><option value="30" selected>watch</option><option value="0">fast</option></select></label>
-        </div>
-      </div>
-      <div class="steps-bar">
-        <button class="btn step-btn" data-r="run"><span class="step-n">1</span> Optimize</button>
-        <button class="btn step-btn primary" data-r="step2" disabled><span class="step-n">2</span> Project</button>
-        <button class="btn step-btn" data-r="download" disabled><span class="step-n">3</span> Download printable mesh</button>
-        <button class="btn" data-r="stop" disabled>■ Stop</button>
-      </div>
-      <p class="status" data-r="status" aria-live="polite">Pick views and pictures, then press Optimize.</p>
-      <div class="chart-wrap"><canvas data-r="chart"></canvas></div>
-      <p class="muted small chart-legend"><span class="lg loss"></span>loss per view <span class="lg shade"></span>height steps <span class="lg sub"></span>bars split <span class="lg rays"></span>rays doubled</p>
-      <details class="opts" open>
-        <summary>Optimizer settings (<code>grad_descent</code> arguments)</summary>
-        <div class="opt-grid">
-          <label>num_epochs <input type="number" min="2" max="600" value="295" data-opt="epochs"></label>
-          <label><input type="checkbox" data-opt="v10"> original release settings (v1.0)</label>
-          <label><input type="checkbox" checked data-opt="anneal"> simulated annealing</label>
-          <label><input type="checkbox" checked data-opt="barrier"> barrier loss</label>
-          <label><input type="checkbox" checked data-opt="neighbor"> neighbour loss</label>
-          <label>smooth step <select data-opt="heaviside"><option value="tan" selected>tanh</option><option value="erfc">erfc</option><option value="circ">circle</option><option value="log">log</option><option value="circdist">circle distance</option></select></label>
-          <label>k <input type="number" step="0.01" min="0.01" value="0.1" data-opt="k"></label>
-          <label>optimizer <select data-opt="optim"><option>Adam</option><option>SGD</option></select></label>
-          <label>seed <input type="number" placeholder="random" data-opt="seed"></label>
-        </div>
-        <p class="muted small opt-note">After step 300 the bars are not split any further. The Python code keeps splitting them every 100 steps.</p>
-      </details>
-    </div>
-  </div>
-</section>
-
-<section class="app-help prose">
-  <h2>How to use it</h2>
-  <ol>
-    <li><b>Views.</b> Each card is one viewing direction and the image you want to see from it. Pick an image from the list or upload your own. Use two to four views, at least 40° apart.</li>
-    <li><b>Step 1: Optimize.</b> Runs the optimizer. The chart shows the loss for each view.</li>
-    <li><b>Step 2: Project.</b> Projects each image onto the sides of the bars its camera sees, and builds a closed, textured mesh.</li>
-    <li><b>Step 3: Download printable mesh.</b> Saves the mesh (OBJ, MTL and PNG) and the optimized heights and colours, which <code>reproject.py</code> can read.</li>
-    <li><b>Look from view</b> on a card shows the surface from that camera.</li>
-  </ol>
-  <p class="muted small">Everything runs in your browser, and your images are not uploaded. We ported the code from Python to JavaScript for this page. The method is explained in the <a href="index.html">walkthrough</a>.</p>
-</section>
-</main>
-
-<footer class="footer">
-  <p>Constructing Printable Surfaces with View-Dependent Appearance · SIGGRAPH 2023 · <a href="index.html">walkthrough</a> · <a href="https://github.com/maxineAPS/view-dependent" target="_blank" rel="noopener">code</a></p>
-  <p class="small">The code has been updated since the paper (v2.0); the original release is available as v1.0.</p>
-</footer>
-
-<script type="module" src="js/ui.js?v=878180fb"></script>
+<body>
+<p>This page has moved to <a href="https://maxineaps.github.io/view-dependent/app/">https://maxineaps.github.io/view-dependent/app/</a>.</p>
 </body>
 </html>
