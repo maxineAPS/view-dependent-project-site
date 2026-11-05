@@ -1,3 +1,3 @@
-# Constructing Printable Surfaces with View-Dependent Appearance (SIGGRAPH 2023)
+# view-dependent-project-site
 
-The project page has moved to https://maxineaps.github.io/view-dependent/
+Walkthrough and browser app for "Constructing Printable Surfaces with View-Dependent Appearance", served at https://maxineaps.github.io/view-dependent-project-site/ (app at /app/). Code: https://github.com/maxineAPS/view-dependent
